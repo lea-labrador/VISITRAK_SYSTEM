@@ -109,7 +109,11 @@ const Section = ({
   setActiveTab,
   collapsed,
 }) => {
-  const filteredTabs = tabs.filter((tab) => tab !== "notifications");
+  const filteredTabs = (tabs || []).filter((tab) => tab !== "notifications");
+
+  if (filteredTabs.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-4">

@@ -3,7 +3,6 @@ import { auth } from "../lib/firebase";
 
 const VisitorTable = ({
   visitors = [],
-  renderStars,
   onViewDetails,
   canDeleteVisitors = false,
 }) => {
@@ -128,7 +127,6 @@ const VisitorTable = ({
                       <col className="w-[80px]" />
                       <col className="w-[80px]" />
                       <col className="w-[100px]" />
-                      <col className="w-[120px]" />
                       {canDeleteVisitors && <col className="w-[70px]" />}
                     </colgroup>
                     {/* Table header */}
@@ -152,9 +150,6 @@ const VisitorTable = ({
                         <th className="py-3 px-4 font-medium text-gray-700 dark:text-gray-300 text-left">
                           Status
                         </th>
-                        <th className="py-3 px-4 font-medium text-gray-700 dark:text-gray-300 text-left">
-                          Satisfaction
-                        </th>
                         {canDeleteVisitors && (
                           <th className="py-3 px-4 font-medium text-gray-700 dark:text-gray-300 text-left">
                             Action
@@ -174,7 +169,6 @@ const VisitorTable = ({
                         <col className="w-[80px]" />
                         <col className="w-[80px]" />
                         <col className="w-[100px]" />
-                        <col className="w-[120px]" />
                         {canDeleteVisitors && <col className="w-[70px]" />}
                       </colgroup>
                       <tbody>
@@ -210,16 +204,6 @@ const VisitorTable = ({
                               >
                                 {formatStatus(v.status)}
                               </span>
-                            </td>
-                            <td className="py-5 px-4">
-                              <div className="flex items-center gap-2">
-                                {renderStars(v.satisfaction)}
-                                {v.satisfaction > 0 && (
-                                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                                    {v.satisfaction.toFixed(1)}
-                                  </span>
-                                )}
-                              </div>
                             </td>
                             {canDeleteVisitors && (
                               <td className="py-5 px-4">

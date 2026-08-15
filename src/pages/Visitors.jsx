@@ -187,6 +187,7 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
         setVisits(data);
       },
       (error) => {
+        console.warn("Unable to load visitor records.", error);
       }
     );
 
@@ -218,6 +219,7 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
         setLoading(false);
       },
       (error) => {
+        console.warn("Unable to load visitor feedback ratings.", error);
         setLoading(false);
       }
     );
@@ -246,6 +248,7 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
         setOffices(data);
       },
       (error) => {
+        console.warn("Unable to load offices.", error);
       }
     );
 
@@ -275,14 +278,13 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
     }));
   };
 
-  // Combine visits with feedback ratings
+  // Combine visits with feedback question ratings for visitor details
   const visitsWithRatings = useMemo(() => {
     return visits.map(visit => {
       const feedback = feedbacks.find(f => f.visitId === visit.id);
       
       return {
         ...visit,
-        satisfaction: feedback?.averageRating || 0,
         questionRatings: feedback?.questionRatings || [],
       };
     });
@@ -310,20 +312,6 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
 
   const handleViewVisitorDetails = (visitor) => {
     setSelectedVisitor(visitor || null);
-  };
-
-  // Render stars for satisfaction ratings
-  const renderStars = (rating) => {
-    const normalizedRating = Math.min(5, Math.max(0, Math.round(rating || 0)));
-    return (
-      <div className="flex">
-        {[...Array(5)].map((_, i) => (
-          <span key={i} className={i < normalizedRating ? "text-yellow-400" : "text-gray-300"}>
-            ★
-          </span>
-        ))}
-      </div>
-    );
   };
 
   // Get unique offices from visits for the filter dropdown
@@ -506,7 +494,6 @@ const Visitors = ({ user = { type: "SuperAdmin", office: null } }) => {
 
         <VisitorTable
           visitors={filteredVisitors}
-          renderStars={renderStars}
           onViewDetails={handleViewVisitorDetails}
           canDeleteVisitors={user.type === "SuperAdmin"}
         />

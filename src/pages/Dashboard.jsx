@@ -235,9 +235,8 @@ const Dashboard = ({
       feedback: ["feedback"],
     },
     OfficeAdmin: {
-      overview: ["dashboard", "analytics", "notifications"],
-      management: ["visitors"],
-      feedback: ["feedback"],
+      overview: ["dashboard", "notifications"],
+      management: ["visitors"]
     },
   };
 

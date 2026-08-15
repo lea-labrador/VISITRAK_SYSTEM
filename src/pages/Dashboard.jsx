@@ -118,7 +118,8 @@ const Dashboard = ({
         oscillator.start(start);
         oscillator.stop(start + duration + 0.02);
       });
-    } catch  {
+    } catch (error) {
+      console.warn("Unable to play password reset alert sound.", error);
     }
   }, [getResetAudioContext]);
 
@@ -205,7 +206,8 @@ const Dashboard = ({
         }
 
         knownResetRequestIds.current = latestIds;
-      } catch  {
+      } catch (error) {
+        console.warn("Unable to check password reset requests.", error);
       }
     };
 

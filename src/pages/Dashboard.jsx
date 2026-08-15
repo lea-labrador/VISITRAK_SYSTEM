@@ -118,7 +118,8 @@ const Dashboard = ({
         oscillator.start(start);
         oscillator.stop(start + duration + 0.02);
       });
-    } catch  {
+    } catch (error) {
+      console.warn("Unable to play password reset alert sound.", error);
     }
   }, [getResetAudioContext]);
 
@@ -205,7 +206,8 @@ const Dashboard = ({
         }
 
         knownResetRequestIds.current = latestIds;
-      } catch  {
+      } catch (error) {
+        console.warn("Unable to check password reset requests.", error);
       }
     };
 
@@ -235,13 +237,23 @@ const Dashboard = ({
       feedback: ["feedback"],
     },
     OfficeAdmin: {
-      overview: ["dashboard", "analytics", "notifications"],
+      overview: ["dashboard", "notifications"],
       management: ["visitors"],
-      feedback: ["feedback"],
+      feedback: [],
     },
   };
 
   const menu = menuConfig[user.type] || menuConfig.OfficeAdmin;
+  const allowedTabs = useMemo(
+    () => new Set([...Object.values(menu).flat(), "profile"]),
+    [menu]
+  );
+
+  useEffect(() => {
+    if (!allowedTabs.has(activeTab)) {
+      setActiveTab("dashboard");
+    }
+  }, [activeTab, allowedTabs]);
 
   // 🏢 Filter visitors based on user office (for OfficeAdmin)
   const filteredVisitors = useMemo(() => {
@@ -367,7 +379,7 @@ const Dashboard = ({
             </>
           )}
 
-          {activeTab === "analytics" && (
+          {activeTab === "analytics" && user.type === "SuperAdmin" && (
             <Analytics
               visitors={filteredVisitors}
               feedbacks={feedbacks}
@@ -376,7 +388,7 @@ const Dashboard = ({
           )}
           {activeTab === "visitors" && <Visitors user={user} />}
           {activeTab === "offices" && user.type === "SuperAdmin" && <Offices />}
-          {activeTab === "feedback" && (
+          {activeTab === "feedback" && user.type === "SuperAdmin" && (
             <Feedback
               visitors={filteredVisitors}
               feedbacks={feedbacks}

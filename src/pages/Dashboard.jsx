@@ -17,19 +17,6 @@ import { getOfficePasswordResetRequests } from "../lib/info.services";
 
 const RESET_REQUEST_CHECK_INTERVAL_MS = 30000;
 
-const MENU_CONFIG = {
-  SuperAdmin: {
-    overview: ["dashboard", "analytics", "notifications"],
-    management: ["visitors", "offices"],
-    feedback: ["feedback"],
-  },
-  OfficeAdmin: {
-    overview: ["dashboard", "notifications"],
-    management: ["visitors"],
-    feedback: [],
-  },
-};
-
 const ResetRequestNotificationModal = ({ show, title, message, onOk }) => {
   if (!show) return null;
 
@@ -131,8 +118,7 @@ const Dashboard = ({
         oscillator.start(start);
         oscillator.stop(start + duration + 0.02);
       });
-    } catch (error) {
-      console.warn("Unable to play password reset alert sound.", error);
+    } catch  {
     }
   }, [getResetAudioContext]);
 
@@ -219,8 +205,7 @@ const Dashboard = ({
         }
 
         knownResetRequestIds.current = latestIds;
-      } catch (error) {
-        console.warn("Unable to check password reset requests.", error);
+      } catch  {
       }
     };
 
@@ -243,17 +228,20 @@ const Dashboard = ({
   };
 
   // 🧭 MENU CONFIG
-  const menu = MENU_CONFIG[user.type] || MENU_CONFIG.OfficeAdmin;
-  const allowedTabs = useMemo(
-    () => new Set([...Object.values(menu).flat(), "profile"]),
-    [menu]
-  );
+  const menuConfig = {
+    SuperAdmin: {
+      overview: ["dashboard", "analytics", "notifications"],
+      management: ["visitors", "offices"],
+      feedback: ["feedback"],
+    },
+    OfficeAdmin: {
+      overview: ["dashboard", "analytics", "notifications"],
+      management: ["visitors"],
+      feedback: ["feedback"],
+    },
+  };
 
-  useEffect(() => {
-    if (!allowedTabs.has(activeTab)) {
-      setActiveTab("dashboard");
-    }
-  }, [activeTab, allowedTabs]);
+  const menu = menuConfig[user.type] || menuConfig.OfficeAdmin;
 
   // 🏢 Filter visitors based on user office (for OfficeAdmin)
   const filteredVisitors = useMemo(() => {
@@ -379,7 +367,7 @@ const Dashboard = ({
             </>
           )}
 
-          {activeTab === "analytics" && user.type === "SuperAdmin" && (
+          {activeTab === "analytics" && (
             <Analytics
               visitors={filteredVisitors}
               feedbacks={feedbacks}
@@ -388,7 +376,7 @@ const Dashboard = ({
           )}
           {activeTab === "visitors" && <Visitors user={user} />}
           {activeTab === "offices" && user.type === "SuperAdmin" && <Offices />}
-          {activeTab === "feedback" && user.type === "SuperAdmin" && (
+          {activeTab === "feedback" && (
             <Feedback
               visitors={filteredVisitors}
               feedbacks={feedbacks}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../assets/visitrakLogo.png";
+import logo from "../assets/visitrak_newlogo.png";
 import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Sidebar = ({

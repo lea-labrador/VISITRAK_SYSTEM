@@ -288,27 +288,25 @@ const OfficeCard = memo(({ office, index, onEdit, onDelete }) => {
           )}
         </div>
         
-        {/* Action Buttons - Hide delete for super admin */}
+        {/* Action Buttons - Hide edit/delete for super admin */}
         <div className="flex gap-1">
-          <button 
-            onClick={() => onEdit(index)} 
-            className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${
-              office.role === "super" 
-                ? "text-purple-500 hover:text-purple-700 hover:bg-purple-50" 
-                : "text-gray-500 hover:text-[#7400EA]"
-            }`}
-            title="Edit"
-          >
-            <Pencil size={16} />
-          </button>
           {office.role !== "super" && (
-            <button 
-              onClick={() => onDelete(index)} 
-              className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-500 hover:text-red-600"
-              title="Delete"
-            >
-              <Trash2 size={16} />
-            </button>
+            <>
+              <button
+                onClick={() => onEdit(index)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-[#7400EA]"
+                title="Edit"
+              >
+                <Pencil size={16} />
+              </button>
+              <button
+                onClick={() => onDelete(index)}
+                className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-500 hover:text-red-600"
+                title="Delete"
+              >
+                <Trash2 size={16} />
+              </button>
+            </>
           )}
         </div>
       </div>

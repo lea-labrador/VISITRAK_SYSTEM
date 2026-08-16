@@ -33,6 +33,43 @@ const ensureUsernameAvailable = async (db, usernameNormalized, excludeId) => {
   return existingUsername.docs.every((doc) => doc.id === excludeId);
 };
 
+const getAuthUser = async (admin, uid) => {
+  const cleanUid = String(uid || "").trim();
+  if (!cleanUid) return null;
+
+  try {
+    return await admin.auth().getUser(cleanUid);
+  } catch (error) {
+    if (String(error?.code || "") === "auth/user-not-found") return null;
+    throw error;
+  }
+};
+
+const getAuthUserByEmail = async (admin, email) => {
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) return null;
+
+  try {
+    return await admin.auth().getUserByEmail(cleanEmail);
+  } catch (error) {
+    if (String(error?.code || "") === "auth/user-not-found") return null;
+    throw error;
+  }
+};
+
+const resolveAuthUid = async (admin, { id, existing, role }) => {
+  if (role !== "super") return existing.uid || id;
+
+  const uidCandidates = [existing.uid, id];
+  for (const uid of uidCandidates) {
+    const user = await getAuthUser(admin, uid);
+    if (user) return user.uid;
+  }
+
+  const userByExistingEmail = await getAuthUserByEmail(admin, existing.email);
+  return userByExistingEmail?.uid || existing.uid || id;
+};
+
 const ensureSuperRequester = async (admin, db, req) => {
   const token = getBearerToken(req);
   if (!token) throw new Error("Missing bearer token");
@@ -113,8 +150,8 @@ export default async function handler(req, res) {
     }
 
     const existing = officeSnap.data() || {};
-    const uid = existing.uid || id;
     const cleanRole = role === "super" ? "super" : "office";
+    const uid = await resolveAuthUid(admin, { id, existing, role: cleanRole });
     const normalizedUsername = normalizeUsername(username);
     let cleanEmail = normalizeEmail(email);
     const isInactive = status === "inactive";
@@ -228,18 +265,27 @@ export default async function handler(req, res) {
     const isAuthTokenError =
       errorMessage === "Missing bearer token" ||
       errorMessage === "Invalid bearer token";
+    const isConflictError = String(error?.code || "") === "auth/email-already-exists";
     const status =
-      error.message === "Not authorized" ? 403 : isAuthTokenError ? 401 : 500;
+      error.message === "Not authorized"
+        ? 403
+        : isAuthTokenError
+          ? 401
+          : isConflictError
+            ? 409
+            : 500;
     return res.status(status).json({
       success: false,
       message:
         status === 401
           ? "Session token is invalid for the server Firebase project. Sign out and sign in again."
-          : status === 403
-            ? "Not authorized."
-            : isConfigError
-              ? "Server Firebase Admin configuration is invalid. Please check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY on Vercel."
-              : "Failed to update office account.",
+           : status === 403
+             ? "Not authorized."
+             : status === 409
+               ? "This email is already used by another authentication account."
+             : isConfigError
+               ? "Server Firebase Admin configuration is invalid. Please check FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY on Vercel."
+               : "Failed to update office account.",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }

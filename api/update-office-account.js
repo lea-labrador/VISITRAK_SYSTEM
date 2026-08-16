@@ -243,13 +243,17 @@ export default async function handler(req, res) {
 
     const responseData = {
       id,
-      ...existing,
-      ...updateData,
+      uid,
+      name: cleanName,
+      officialName,
+      ...(cleanRole === "super" ? { email: cleanEmail } : {}),
+      username: cleanRole === "office" ? normalizedUsername : "",
+      usernameNormalized: cleanRole === "office" ? normalizedUsername : "",
+      role: cleanRole,
+      purposes: normalizeList(purposes),
+      staffToVisit: normalizeList(staffToVisit),
+      status: isInactive ? "inactive" : "active",
     };
-
-    if (cleanRole !== "super") {
-      delete responseData.email;
-    }
 
     return res.status(200).json({
       success: true,

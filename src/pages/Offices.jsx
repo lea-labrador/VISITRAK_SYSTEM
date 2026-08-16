@@ -28,8 +28,21 @@ const normalizeOfficeName = (name = "") =>
     .toLowerCase();
 const getStaffNameKey = (staff) =>
   normalizeStaffName(typeof staff === "string" ? staff : staff?.name);
+const asList = (items = []) => {
+  if (Array.isArray(items)) return items;
+  if (typeof items === "string") {
+    const name = items.trim();
+    return name ? [{ id: `legacy_${name}`, name }] : [];
+  }
+  if (items && typeof items === "object") {
+    return Object.values(items).filter(Boolean);
+  }
+  return [];
+};
 const normalizeEditList = (items = []) =>
-  (Array.isArray(items) ? items : []).map((item) => String(item?.name || "").trim());
+  asList(items).map((item) =>
+    String(typeof item === "string" ? item : item?.name || "").trim()
+  );
 const isSuperOffice = (office = {}) =>
   String(office?.role || "").trim().toLowerCase() === "super";
 const getOfficeSortLabel = (office = {}) =>
@@ -182,6 +195,9 @@ const StatItem = memo(({ icon, label, value, color = "gray" }) => {
 StatItem.displayName = 'StatItem';
 
 const OfficeCard = memo(({ office, index, onEdit, onDelete }) => {
+  const purposes = asList(office.purposes);
+  const staffToVisit = asList(office.staffToVisit);
+
   // Smart date formatter
   const formatDate = useCallback((timestamp) => {
     if (!timestamp) return "Just now";
@@ -311,19 +327,19 @@ const OfficeCard = memo(({ office, index, onEdit, onDelete }) => {
           value={formatDate(office.createdAt)} 
           color={office.role === "super" ? "purple" : "blue"}
         />
-        {office.purposes?.length > 0 && (
+        {purposes.length > 0 && (
           <StatItem 
             icon={Target} 
             label="Purposes" 
-            value={office.purposes.length} 
+            value={purposes.length} 
             color={office.role === "super" ? "purple" : "green"}
           />
         )}
-        {office.staffToVisit?.length > 0 && (
+        {staffToVisit.length > 0 && (
           <StatItem 
             icon={Users} 
             label="Staff" 
-            value={office.staffToVisit.length} 
+            value={staffToVisit.length} 
             color={office.role === "super" ? "purple" : "orange"}
           />
         )}
@@ -1120,7 +1136,7 @@ const Offices = () => {
     const lookup = new Map();
     offices.forEach((office) => {
       const officeLabel = getOfficeDisplayName(office);
-      (office.staffToVisit || []).forEach((staff) => {
+      asList(office.staffToVisit).forEach((staff) => {
         const key = getStaffNameKey(staff);
         if (key && !lookup.has(key)) {
           lookup.set(key, officeLabel);
@@ -1140,7 +1156,7 @@ const Offices = () => {
         const conflict = offices.find(
           (office, index) =>
             (excludeIndex === null || index !== excludeIndex) &&
-            (office.staffToVisit || []).some(
+            asList(office.staffToVisit).some(
               (officeStaff) => getStaffNameKey(officeStaff) === key
             )
         );
@@ -1458,8 +1474,8 @@ const Offices = () => {
         role: office.role || "office", // Preserve original role
         passwordChanged: office.passwordChanged === true,
         passwordChangedAt: office.passwordChangedAt || null,
-        purposes: office.purposes || [],
-        staffToVisit: office.staffToVisit || []
+        purposes: asList(office.purposes),
+        staffToVisit: asList(office.staffToVisit)
       };
       setEditData(nextEditData);
       setEditBaseline(createEditSnapshot(nextEditData));
@@ -1689,7 +1705,7 @@ const Offices = () => {
     const conflictingOffice = offices.find(
       (office, index) =>
         index !== editIndex &&
-        (office.staffToVisit || []).some(
+        asList(office.staffToVisit).some(
           (staff) => getStaffNameKey(staff) === normalizedName
         )
     );

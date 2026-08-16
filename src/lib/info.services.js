@@ -23,6 +23,32 @@ const passwordResetTokensCollection = collection(db, "passwordResetTokens");
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 const normalizeUsername = (username = "") => username.trim().toLowerCase();
 const USERNAME_REGEX = /^[a-z0-9][a-z0-9._-]{2,30}[a-z0-9]$/;
+const normalizeOfficeList = (items = []) => {
+  if (Array.isArray(items)) return items;
+  if (typeof items === "string") {
+    const name = items.trim();
+    return name ? [{ id: `legacy_${Date.now()}`, name }] : [];
+  }
+  if (items && typeof items === "object") {
+    return Object.values(items).filter(Boolean);
+  }
+  return [];
+};
+const normalizeNamedOfficeList = (items = [], prefix = "item") =>
+  normalizeOfficeList(items)
+    .map((item, index) => {
+      const name = String(typeof item === "string" ? item : item?.name || "").trim();
+      if (!name) return null;
+      return {
+        ...(typeof item === "object" && item !== null ? item : {}),
+        id:
+          typeof item === "object" && item?.id
+            ? item.id
+            : `${prefix}_${Date.now()}_${index}`,
+        name,
+      };
+    })
+    .filter(Boolean);
 
 const waitForAuthUser = (timeoutMs = 3000) =>
   new Promise((resolve) => {
@@ -673,25 +699,15 @@ const validateOfficeData = (office) => {
     validatedOffice.officialName = "";
   }
   
-  if (!validatedOffice.purposes || !Array.isArray(validatedOffice.purposes)) {
-    validatedOffice.purposes = [];
-  } else {
-    validatedOffice.purposes = validatedOffice.purposes.map((purpose, index) => ({
-      id: purpose.id || `purpose_${Date.now()}_${index}`,
-      name: purpose.name || `Purpose ${index + 1}`,
-      ...purpose
-    }));
-  }
+  validatedOffice.purposes = normalizeNamedOfficeList(
+    validatedOffice.purposes,
+    "purpose"
+  );
   
-  if (!validatedOffice.staffToVisit || !Array.isArray(validatedOffice.staffToVisit)) {
-    validatedOffice.staffToVisit = [];
-  } else {
-    validatedOffice.staffToVisit = validatedOffice.staffToVisit.map((staff, index) => ({
-      id: staff.id || `staff_${Date.now()}_${index}`,
-      name: staff.name || `Staff ${index + 1}`,
-      ...staff
-    }));
-  }
+  validatedOffice.staffToVisit = normalizeNamedOfficeList(
+    validatedOffice.staffToVisit,
+    "staff"
+  );
   
   return validatedOffice;
 };
@@ -786,8 +802,8 @@ export const getOfficeById = async (id) => {
         officialName: data.officialName || "",
         username: data.username || "",
         usernameNormalized: data.usernameNormalized || "",
-        purposes: data.purposes || [],
-        staffToVisit: data.staffToVisit || []
+        purposes: normalizeOfficeList(data.purposes),
+        staffToVisit: normalizeOfficeList(data.staffToVisit)
       };
     }
     return null;
@@ -817,8 +833,8 @@ export const getOfficeByEmail = async (email) => {
       officialName: data.officialName || "",
       username: data.username || "",
       usernameNormalized: data.usernameNormalized || "",
-      purposes: data.purposes || [],
-      staffToVisit: data.staffToVisit || []
+      purposes: normalizeOfficeList(data.purposes),
+      staffToVisit: normalizeOfficeList(data.staffToVisit)
     };
   } catch (error) {
     throw error;
@@ -845,8 +861,8 @@ export const getOfficeByUsername = async (username) => {
       officialName: data.officialName || "",
       username: data.username || cleanUsername,
       usernameNormalized: data.usernameNormalized || cleanUsername,
-      purposes: data.purposes || [],
-      staffToVisit: data.staffToVisit || [],
+      purposes: normalizeOfficeList(data.purposes),
+      staffToVisit: normalizeOfficeList(data.staffToVisit),
     };
   } catch (error) {
     throw error;
@@ -865,8 +881,8 @@ export const fetchOffices = async () => {
       officialName: doc.data().officialName || "",
       username: doc.data().username || "",
       usernameNormalized: doc.data().usernameNormalized || "",
-      purposes: doc.data().purposes || [],
-      staffToVisit: doc.data().staffToVisit || []
+      purposes: normalizeOfficeList(doc.data().purposes),
+      staffToVisit: normalizeOfficeList(doc.data().staffToVisit)
     }));
     
     return offices;
@@ -1074,8 +1090,7 @@ export const getOfficesByPurpose = async (purposeName) => {
     const allOffices = await fetchOffices();
     
     const filteredOffices = allOffices.filter(office => 
-      office.purposes && 
-      office.purposes.some(purpose => 
+      normalizeNamedOfficeList(office.purposes).some(purpose => 
         purpose.name.toLowerCase().includes(purposeName.toLowerCase())
       )
     );
@@ -1094,8 +1109,7 @@ export const getOfficesByStaff = async (staffName) => {
     const allOffices = await fetchOffices();
     
     const filteredOffices = allOffices.filter(office => 
-      office.staffToVisit && 
-      office.staffToVisit.some(staff => 
+      normalizeNamedOfficeList(office.staffToVisit).some(staff => 
         staff.name.toLowerCase().includes(staffName.toLowerCase())
       )
     );
@@ -1122,7 +1136,10 @@ export const addPurposeToOffice = async (officeId, purpose) => {
       ...purpose
     };
     
-    const updatedPurposes = [...(office.purposes || []), newPurpose];
+    const updatedPurposes = [
+      ...normalizeNamedOfficeList(office.purposes, "purpose"),
+      newPurpose,
+    ];
     
     const updateData = {
       purposes: updatedPurposes,
@@ -1167,7 +1184,10 @@ export const addStaffToOffice = async (officeId, staff) => {
       ...staff
     };
     
-    const updatedStaff = [...(office.staffToVisit || []), newStaff];
+    const updatedStaff = [
+      ...normalizeNamedOfficeList(office.staffToVisit, "staff"),
+      newStaff,
+    ];
     
     const updateData = {
       staffToVisit: updatedStaff,
@@ -1206,12 +1226,13 @@ export const removePurposeFromOffice = async (officeId, purposeId) => {
       throw new Error(`Office with ID ${officeId} not found`);
     }
     
-    const purposeToRemove = office.purposes.find(p => p.id === purposeId);
+    const purposes = normalizeNamedOfficeList(office.purposes, "purpose");
+    const purposeToRemove = purposes.find(p => p.id === purposeId);
     if (!purposeToRemove) {
       throw new Error(`Purpose with ID ${purposeId} not found`);
     }
     
-    const updatedPurposes = office.purposes.filter(p => p.id !== purposeId);
+    const updatedPurposes = purposes.filter(p => p.id !== purposeId);
     
     const updateData = {
       purposes: updatedPurposes,
@@ -1250,12 +1271,13 @@ export const removeStaffFromOffice = async (officeId, staffId) => {
       throw new Error(`Office with ID ${officeId} not found`);
     }
     
-    const staffToRemove = office.staffToVisit.find(s => s.id === staffId);
+    const staffToVisit = normalizeNamedOfficeList(office.staffToVisit, "staff");
+    const staffToRemove = staffToVisit.find(s => s.id === staffId);
     if (!staffToRemove) {
       throw new Error(`Staff with ID ${staffId} not found`);
     }
     
-    const updatedStaff = office.staffToVisit.filter(s => s.id !== staffId);
+    const updatedStaff = staffToVisit.filter(s => s.id !== staffId);
     
     const updateData = {
       staffToVisit: updatedStaff,

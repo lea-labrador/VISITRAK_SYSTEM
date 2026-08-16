@@ -95,34 +95,6 @@ const Login = ({ onLogin }) => {
     navigate("/forgot-password");
   };
 
-  const restoreSuperAdminProfile = async (authUser) => {
-    const token = await authUser.getIdToken();
-    const response = await fetch("/api/office-login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ action: "ensureSuperAdminProfile" }),
-    });
-
-    let payload = {};
-    try {
-      payload = await response.json();
-    } catch {
-      // Use the generic fallback below.
-    }
-
-    if (!response.ok || payload.success === false) {
-      throw new Error(
-        payload.message ||
-          "Account profile not found in Firestore. Contact your administrator."
-      );
-    }
-
-    await authUser.getIdToken(true);
-  };
-
   const handleLoginClick = async (e) => {
     e?.preventDefault();
     if (!identifier || !password) {
@@ -179,11 +151,7 @@ const Login = ({ onLogin }) => {
 
       const authUser = authResult.user;
 
-      let officeProfile = await getOfficeProfileForAuthUser(authUser);
-      if (!officeProfile && isEmailLogin) {
-        await restoreSuperAdminProfile(authUser);
-        officeProfile = await getOfficeProfileForAuthUser(authUser);
-      }
+      const officeProfile = await getOfficeProfileForAuthUser(authUser);
 
       if (!officeProfile) {
         await signOut(auth);

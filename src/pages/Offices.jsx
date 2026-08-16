@@ -1367,16 +1367,9 @@ const Offices = () => {
     }
 
     const nameKey = normalizeOfficeName(addData.name);
-    const officialKey = normalizeOfficeName(addData.officialName);
     const existingOffice = offices.find((office) => {
       const officeNameKey = normalizeOfficeName(office?.name);
-      const officeOfficialKey = normalizeOfficeName(office?.officialName);
-      return (
-        (nameKey &&
-          (nameKey === officeNameKey || nameKey === officeOfficialKey)) ||
-        (officialKey &&
-          (officialKey === officeNameKey || officialKey === officeOfficialKey))
-      );
+      return nameKey && nameKey === officeNameKey;
     });
 
     if (existingOffice) {
@@ -1766,11 +1759,8 @@ const Offices = () => {
     }
 
     const nameKey = normalizeOfficeName(editData.name);
-    const officialKey = normalizeOfficeName(editData.officialName);
     const baselineNameKey = normalizeOfficeName(editBaseline?.name || "");
-    const baselineOfficialKey = normalizeOfficeName(editBaseline?.officialName || "");
-    const nameChanged =
-      !editBaseline || nameKey !== baselineNameKey || officialKey !== baselineOfficialKey;
+    const nameChanged = !editBaseline || nameKey !== baselineNameKey;
 
     if (nameChanged) {
       const currentOfficeId = editData.id;
@@ -1778,13 +1768,7 @@ const Offices = () => {
         if (currentOfficeId && office?.id === currentOfficeId) return false;
         if (!currentOfficeId && index === editIndex) return false;
         const officeNameKey = normalizeOfficeName(office?.name);
-        const officeOfficialKey = normalizeOfficeName(office?.officialName);
-        return (
-          (nameKey &&
-            (nameKey === officeNameKey || nameKey === officeOfficialKey)) ||
-          (officialKey &&
-            (officialKey === officeNameKey || officialKey === officeOfficialKey))
-        );
+        return nameKey && nameKey === officeNameKey;
       });
 
       if (existingOffice) {

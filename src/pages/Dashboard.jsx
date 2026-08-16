@@ -255,23 +255,23 @@ const Dashboard = ({
     }
   }, [activeTab, allowedTabs]);
 
-  // 🏢 Filter visitors based on user office (for OfficeAdmin)
+  
   const filteredVisitors = useMemo(() => {
     return user.type === "OfficeAdmin"
       ? visitors.filter((v) => v.office === user.office)
       : visitors;
   }, [visitors, user]);
 
-  // 🧮 TODAY'S VISITORS (for Live Visitor Feed)
+ 
   const todaysVisitors = useMemo(() => {
     const today = new Date().toLocaleDateString();
     return filteredVisitors.filter((v) => v.date === today);
   }, [filteredVisitors]);
 
-  // 📊 TODAY'S VISITORS COUNT (for CardStat)
+  
   const visitorsToday = useMemo(() => todaysVisitors.length, [todaysVisitors]);
 
-  // 📆 Helper for "this week" visitors
+  
   const visitorsThisWeek = useMemo(() => {
     const today = new Date();
     return filteredVisitors.filter((v) => {
@@ -290,13 +290,13 @@ const Dashboard = ({
     }).length;
   }, [filteredVisitors]);
 
-  // 🕒 Checked-in visitors
+ 
   const currentlyCheckedIn = useMemo(
     () => filteredVisitors.filter((v) => v.status === "Check In").length,
     [filteredVisitors]
   );
 
-  // 🧮 Compute average satisfaction FROM FEEDBACKS averageRating field
+  
   const avgSatisfaction = useMemo(() => {
     if (!feedbacks || feedbacks.length === 0) return "0.0";
 

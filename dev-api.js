@@ -7,7 +7,6 @@ import completePasswordReset from "./api/complete-password-reset.js";
 import adminResetOfficePassword from "./api/admin-reset-office-password.js";
 import createOfficeAccount from "./api/create-office-account.js";
 import deleteOfficeAccount from "./api/delete-office-account.js";
-import ensureSuperAdminProfile from "./api/ensure-super-admin-profile.js";
 import firestoreUsage from "./api/firestore-usage.js";
 import officePasswordResetRequests from "./api/office-password-reset-requests.js";
 import officeChangePassword from "./api/office-change-password.js";
@@ -22,7 +21,6 @@ const routes = {
   "/api/create-office-account": createOfficeAccount,
   "/api/update-office-account": updateOfficeAccount,
   "/api/delete-office-account": deleteOfficeAccount,
-  "/api/ensure-super-admin-profile": ensureSuperAdminProfile,
   "/api/office-login": officeLogin,
   "/api/office-change-password": officeChangePassword,
   "/api/office-password-reset-requests": officePasswordResetRequests,

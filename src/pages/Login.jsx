@@ -97,11 +97,13 @@ const Login = ({ onLogin }) => {
 
   const restoreSuperAdminProfile = async (authUser) => {
     const token = await authUser.getIdToken();
-    const response = await fetch("/api/ensure-super-admin-profile", {
+    const response = await fetch("/api/office-login", {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ action: "ensureSuperAdminProfile" }),
     });
 
     let payload = {};

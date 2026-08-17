@@ -26,6 +26,9 @@ const toTrimmedText = (value) => (typeof value === "string" ? value.trim() : "")
 const isAllOfficesOption = (value) =>
   toTrimmedText(value).toLowerCase() === "all offices";
 
+const isSuperAdminOfficeOption = (value) =>
+  toTrimmedText(value).toLowerCase() === "super admin";
+
 const getAnonymousAlias = (index) =>
   `Anonymous${String(index + 1).padStart(3, "0")}`;
 
@@ -413,6 +416,7 @@ const Feedback = ({ user }) => {
             id: doc.id,
             name: d.name || "",
             officialName: d.officialName || "",
+            role: d.role || "office",
           };
         });
 
@@ -624,13 +628,14 @@ const Feedback = ({ user }) => {
   const officeOptions = useMemo(() => {
     try {
       const officeNames = (offices || [])
+        .filter((officeItem) => toTrimmedText(officeItem?.role).toLowerCase() !== "super")
         .map((officeItem) => toTrimmedText(officeItem?.name))
-        .filter(Boolean);
+        .filter((officeName) => officeName && !isSuperAdminOfficeOption(officeName));
 
       const feedbackOfficeNames = Array.isArray(feedbacks)
         ? feedbacks
             .map((feedback) => toTrimmedText(feedback?.office))
-            .filter(Boolean)
+            .filter((officeName) => officeName && !isSuperAdminOfficeOption(officeName))
         : [];
 
       const combined = [...officeNames, ...feedbackOfficeNames];
@@ -640,6 +645,7 @@ const Feedback = ({ user }) => {
 
       const uniqueOffices = [...new Set(combined)]
         .filter((officeName) => !isAllOfficesOption(officeName))
+        .filter((officeName) => !isSuperAdminOfficeOption(officeName))
         .sort();
       if (uniqueOffices.length > 0) {
         return uniqueOffices;

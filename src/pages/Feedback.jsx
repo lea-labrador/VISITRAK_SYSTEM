@@ -306,9 +306,9 @@ const isManualQrTokenActive = (qr) => {
   return true;
 };
 
-const isManualQrOfficeConflict = (existingOffice, requestedOffice, offices = []) => {
-  return compareOfficeNames(existingOffice, requestedOffice, offices);
-};
+const isManualQrOfficeConflict = (existingOffice, requestedOffice) =>
+  toTrimmedText(existingOffice).toLowerCase() ===
+  toTrimmedText(requestedOffice).toLowerCase();
 
 const Feedback = ({ user }) => {
   const [search, setSearch] = useState("");
@@ -721,7 +721,6 @@ const Feedback = ({ user }) => {
             return isManualQrOfficeConflict(
               getManualQrOfficeName(qrToken),
               approvedOffice,
-              offices,
             );
           });
 

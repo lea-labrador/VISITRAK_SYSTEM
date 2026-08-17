@@ -245,8 +245,7 @@ const renderSatisfactionRows = (questionRatings = []) =>
     const ratingCells = [5, 4, 3, 2, 1, "na"]
       .map(
         (value) => `
-          <td class="score-check-cell">${
-            selectedColumn === value ? "&#10003;" : ""
+          <td class="score-check-cell">${selectedColumn === value ? "&#10003;" : ""
           }</td>
         `,
       )
@@ -712,8 +711,8 @@ const buildPrintableFeedbackHtml = (visitor) => {
               <span class="field-label">Unit / Office Visited</span>
               <span class="field-sub">(Gibisita nga opisina):</span>
               <span class="field-value">${escapeHtml(
-                getFieldValue(visitor.office || visitor.unitOfficeVisited),
-              )}</span>
+    getFieldValue(visitor.office || visitor.unitOfficeVisited),
+  )}</span>
             </div>
           </div>
 
@@ -723,25 +722,25 @@ const buildPrintableFeedbackHtml = (visitor) => {
               <span class="field-sub">(Klase sa Bisita):</span>
               <span class="choice-group">
                 ${renderChoiceOptions(
-                  [
-                    { value: "citizens", label: "Citizens" },
-                    { value: "business", label: "Business" },
-                    { value: "government", label: "Government" },
-                  ],
-                  clientTypeValue,
-                )}
+    [
+      { value: "citizens", label: "Citizens" },
+      { value: "business", label: "Business" },
+      { value: "government", label: "Government" },
+    ],
+    clientTypeValue,
+  )}
               </span>
             </div>
             <div class="field compact">
               <span class="field-label">Sex:</span>
               <span class="choice-group">
                 ${renderChoiceOptions(
-                  [
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
-                  ],
-                  sexValue,
-                )}
+    [
+      { value: "male", label: "Male" },
+      { value: "female", label: "Female" },
+    ],
+    sexValue,
+  )}
               </span>
             </div>
           </div>
@@ -750,8 +749,8 @@ const buildPrintableFeedbackHtml = (visitor) => {
             <div class="field grow">
               <span class="field-label">Region of Residence:</span>
               <span class="field-value">${escapeHtml(
-                getFieldValue(visitor.regionOfResidence),
-              )}</span>
+    getFieldValue(visitor.regionOfResidence),
+  )}</span>
             </div>
           </div>
 
@@ -760,8 +759,8 @@ const buildPrintableFeedbackHtml = (visitor) => {
               <span class="field-label">Services Availed</span>
               <span class="field-sub">(Mga serbisyo nga nadawat):</span>
               <span class="field-value">${escapeHtml(
-                getFieldValue(visitor.serviceAvailed),
-              )}</span>
+    getFieldValue(visitor.serviceAvailed),
+  )}</span>
             </div>
           </div>
 
@@ -770,8 +769,8 @@ const buildPrintableFeedbackHtml = (visitor) => {
               <span class="field-label">Serviced by</span>
               <span class="field-sub">(Tawo nga naghatag sa serbisyo):</span>
               <span class="field-value">${escapeHtml(
-                getFieldValue(visitor.servicedBy),
-              )}</span>
+    getFieldValue(visitor.servicedBy),
+  )}</span>
             </div>
           </div>
         </div>
@@ -789,14 +788,14 @@ const buildPrintableFeedbackHtml = (visitor) => {
             <span>Which of the following best describes your awareness of a CC?</span>
             <div class="cc-options">
               ${renderChoiceOptions(
-                [
-                  { value: 1, label: "I know what is CC and I saw this office's CC." },
-                  { value: 2, label: "I know what is CC but I did not see this office's CC." },
-                  { value: 3, label: "I learned of the CC only when I saw this office's CC." },
-                  { value: 4, label: "I do not know what a CC is and I did not see one." },
-                ],
-                cc1Value,
-              )}
+    [
+      { value: 1, label: "I know what is CC and I saw this office's CC." },
+      { value: 2, label: "I know what is CC but I did not see this office's CC." },
+      { value: 3, label: "I learned of the CC only when I saw this office's CC." },
+      { value: 4, label: "I do not know what a CC is and I did not see one." },
+    ],
+    cc1Value,
+  )}
             </div>
           </div>
 
@@ -807,15 +806,15 @@ const buildPrintableFeedbackHtml = (visitor) => {
             </span>
             <div class="cc-options">
               ${renderChoiceOptions(
-                [
-                  { value: 1, label: "Easy to see" },
-                  { value: 2, label: "Somewhat easy to see" },
-                  { value: 3, label: "Difficult to see" },
-                  { value: 4, label: "Not visible at all" },
-                  { value: 5, label: "N/A" },
-                ],
-                cc2Value,
-              )}
+    [
+      { value: 1, label: "Easy to see" },
+      { value: 2, label: "Somewhat easy to see" },
+      { value: 3, label: "Difficult to see" },
+      { value: 4, label: "Not visible at all" },
+      { value: 5, label: "N/A" },
+    ],
+    cc2Value,
+  )}
             </div>
           </div>
 
@@ -826,14 +825,14 @@ const buildPrintableFeedbackHtml = (visitor) => {
             </span>
             <div class="cc-options">
               ${renderChoiceOptions(
-                [
-                  { value: 1, label: "Helped very much" },
-                  { value: 2, label: "Somewhat helped" },
-                  { value: 3, label: "Did not help" },
-                  { value: 4, label: "N/A" },
-                ],
-                cc3Value,
-              )}
+    [
+      { value: 1, label: "Helped very much" },
+      { value: 2, label: "Somewhat helped" },
+      { value: 3, label: "Did not help" },
+      { value: 4, label: "N/A" },
+    ],
+    cc3Value,
+  )}
             </div>
           </div>
         </div>
@@ -907,14 +906,14 @@ const buildPrintableFeedbackHtml = (visitor) => {
           <div class="feedback-box">
             <p class="feedback-title">Commendation (Mga Padayeg)</p>
             <div class="feedback-value">${escapeHtml(
-              getNarrativeValue(visitor.commendation),
-            )}</div>
+    getNarrativeValue(visitor.commendation),
+  )}</div>
           </div>
           <div class="feedback-box">
             <p class="feedback-title">Suggestions (Mga Suhestyon)</p>
             <div class="feedback-value">${escapeHtml(
-              getNarrativeValue(visitor.suggestion),
-            )}</div>
+    getNarrativeValue(visitor.suggestion),
+  )}</div>
           </div>
         </div>
       </div>
@@ -1016,7 +1015,7 @@ const FeedbackModal = ({ isOpen, onClose, visitor }) => {
         <div className="px-6 pt-6 pb-4 border-b border-gray-200">
           <div className="flex items-start justify-between gap-4 pr-8">
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 break-words">
+              <h3 className="text-lg font-semibold text-gray-800 wrap-break-word">
                 Feedback Details{" "}
                 <span className="text-sm text-gray-500">
                   ({visitor.office || "Unspecified"})
@@ -1103,7 +1102,7 @@ const FeedbackModal = ({ isOpen, onClose, visitor }) => {
 
           <section>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Commendation</h4>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg break-words">
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg wrap-break-word">
               <p className="text-gray-700 whitespace-pre-line">
                 {visitor.commendation || "No commendation provided."}
               </p>
@@ -1112,7 +1111,7 @@ const FeedbackModal = ({ isOpen, onClose, visitor }) => {
 
           <section>
             <h4 className="text-sm font-semibold text-gray-700 mb-2">Suggestion</h4>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg break-words">
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg wrap-break-word">
               <p className="text-gray-700 whitespace-pre-line">
                 {visitor.suggestion || "No suggestion provided."}
               </p>
@@ -1146,7 +1145,7 @@ const FeedbackModal = ({ isOpen, onClose, visitor }) => {
                         key={`${item.question || "question"}-${index}`}
                         className="align-top"
                       >
-                        <td className="border-b border-gray-200 px-4 py-3 text-sm text-gray-700 break-words">
+                        <td className="border-b border-gray-200 px-4 py-3 text-sm text-gray-700 wrap-break-word">
                           {item.question || `Question ${index + 1}`}
                         </td>
                         <td className="border-b border-gray-200 px-4 py-3 text-right text-sm font-semibold text-yellow-600 whitespace-nowrap">

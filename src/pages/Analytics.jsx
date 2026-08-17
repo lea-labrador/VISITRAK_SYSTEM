@@ -96,19 +96,19 @@ const normalizeQuestionRatings = (answers, questions = []) => {
       if (answer && typeof answer === "object") {
         const question = toTrimmedText(
           answer.question ||
-            answer.label ||
-            answer.text ||
-            answer.title ||
-            answer.prompt ||
-            answer.item,
+          answer.label ||
+          answer.text ||
+          answer.title ||
+          answer.prompt ||
+          answer.item,
         );
 
         const rating = getNumericRating(
           answer.rating ??
-            answer.score ??
-            answer.value ??
-            answer.answer ??
-            answer.selected,
+          answer.score ??
+          answer.value ??
+          answer.answer ??
+          answer.selected,
         );
 
         return {
@@ -847,18 +847,18 @@ const setSummaryTwoFormulaRows = ({
     totalCell.value =
       lastOfficeRow >= firstOfficeRow
         ? {
-            formula: `SUM(${columnLetter}${firstOfficeRow}:${columnLetter}${lastOfficeRow})`,
-            result: overallResult,
-          }
+          formula: `SUM(${columnLetter}${firstOfficeRow}:${columnLetter}${lastOfficeRow})`,
+          result: overallResult,
+        }
         : overallResult;
 
     percentageCell.value =
       columnNumber === 2
         ? ""
         : {
-            formula: `IFERROR(ROUND(${columnLetter}${totalRowNumber}/$B$${totalRowNumber}*100,0),"-")`,
-            result: percentageResult,
-          };
+          formula: `IFERROR(ROUND(${columnLetter}${totalRowNumber}/$B$${totalRowNumber}*100,0),"-")`,
+          result: percentageResult,
+        };
   }
 };
 
@@ -992,20 +992,20 @@ const addRawDataDemographicSummary = (worksheet, records, startRowNumber) => {
       ],
       index,
     ) => {
-    const row = worksheet.getRow(startRowNumber + index);
-    row.getCell(4).value = clientTypeLabel;
-    row.getCell(5).value =
-      typeof clientTypeCount === "object"
-        ? { ...clientTypeCount, result: clientTypeResult }
-        : clientTypeCount;
-    if (sexLabel) {
-      const sexRow = worksheet.getRow(startRowNumber + index);
-      sexRow.getCell(7).value = sexLabel;
-      sexRow.getCell(8).value =
-        typeof sexCount === "object" ? { ...sexCount, result: sexResult } : sexCount;
-      sexRow.commit();
-    }
-    row.commit();
+      const row = worksheet.getRow(startRowNumber + index);
+      row.getCell(4).value = clientTypeLabel;
+      row.getCell(5).value =
+        typeof clientTypeCount === "object"
+          ? { ...clientTypeCount, result: clientTypeResult }
+          : clientTypeCount;
+      if (sexLabel) {
+        const sexRow = worksheet.getRow(startRowNumber + index);
+        sexRow.getCell(7).value = sexLabel;
+        sexRow.getCell(8).value =
+          typeof sexCount === "object" ? { ...sexCount, result: sexResult } : sexCount;
+        sexRow.commit();
+      }
+      row.commit();
     },
   );
 };
@@ -1024,14 +1024,14 @@ const addRawDataCcSummary = (worksheet, records, startRowNumber) => {
         lastDataRow < firstDataRow
           ? 0
           : {
-              formula: `COUNTIF(${columnLetter}${firstDataRow}:${columnLetter}${lastDataRow},${rating})`,
-              result: records.filter(
-                (record) =>
-                  getExcelRatingValue(
-                    record?.[`cc${index + 1}Rating`],
-                  ) === rating,
-              ).length,
-            };
+            formula: `COUNTIF(${columnLetter}${firstDataRow}:${columnLetter}${lastDataRow},${rating})`,
+            result: records.filter(
+              (record) =>
+                getExcelRatingValue(
+                  record?.[`cc${index + 1}Rating`],
+                ) === rating,
+            ).length,
+          };
     });
 
     row.commit();
@@ -1261,13 +1261,13 @@ const addSummaryOneWorksheet = ({
           row.dimensionMeans[index] === null || row.dimensionMeans[index] === undefined
             ? " -"
             : {
-                formula: `${getExcelFormulaSheetName(
-                  sheetInfo.sheetName,
-                )}!${String.fromCharCode(
-                  80 + index,
-                )}${sheetInfo.summaryRowNumber}`,
-                result: row.dimensionMeans[index],
-              };
+              formula: `${getExcelFormulaSheetName(
+                sheetInfo.sheetName,
+              )}!${String.fromCharCode(
+                80 + index,
+              )}${sheetInfo.summaryRowNumber}`,
+              result: row.dimensionMeans[index],
+            };
       }
       worksheet.getCell(rowNumber, 11).value = {
         formula: `${getExcelFormulaSheetName(sheetInfo.sheetName)}!X${sheetInfo.summaryRowNumber}`,
@@ -1567,7 +1567,8 @@ const calculateTrafficByDay = (records = []) => {
 
       const dayIndex = (recordDate.getDay() + 6) % 7; // Monday=0
       counts[dayIndex]++;
-    } catch  {
+    } catch {
+      //
     }
   });
 
@@ -1712,7 +1713,7 @@ const getCurrentUser = () => {
     }
 
     return user;
-  } catch  {
+  } catch {
     return null;
   }
 };
@@ -1911,7 +1912,9 @@ const Analytics = ({ setActiveTab }) => {
     setCurrentUser(user);
 
     if (!user) {
+      //
     } else {
+      //
     }
   }, []);
 
@@ -1932,8 +1935,6 @@ const Analytics = ({ setActiveTab }) => {
         });
 
         setOffices(data);
-      },
-      (error) => {
       },
     );
 
@@ -2006,26 +2007,31 @@ const Analytics = ({ setActiveTab }) => {
             // Use flexible comparison
             const matches = compareOfficeNames(visit.office, userOffice);
             if (matches) {
+              //
             }
             return matches;
           });
 
 
           // Debug: Show unique office names found
+          // eslint-disable-next-line no-unused-vars
           const uniqueOffices = [
             ...new Set(filteredVisits.map((v) => v.office).filter(Boolean)),
           ];
 
           // Also show all offices in database for debugging
+          // eslint-disable-next-line no-unused-vars
           const allUniqueOffices = [
             ...new Set(allVisits.map((v) => v.office).filter(Boolean)),
           ];
         } else {
+          //
         }
 
         setVisits(filteredVisits);
         setLoading(false);
       },
+      // eslint-disable-next-line no-unused-vars
       (error) => {
         setLoading(false);
       },
@@ -2130,6 +2136,7 @@ const Analytics = ({ setActiveTab }) => {
             });
             setFeedbacks(filteredData);
           },
+          // eslint-disable-next-line no-unused-vars
           (error) => {
           },
         );
@@ -2198,11 +2205,13 @@ const Analytics = ({ setActiveTab }) => {
 
             setFeedbacks(data);
           },
+          // eslint-disable-next-line no-unused-vars
           (error) => {
           },
         );
       }
-    } catch  {
+    } catch {
+      //
     }
 
     return () => {
@@ -2640,16 +2649,16 @@ const Analytics = ({ setActiveTab }) => {
           visitOfficeMap[feedback.visitId] || visit?.office || feedback?.office,
         visitorDate: visit?.checkInTime
           ? (visit.checkInTime.toDate
-              ? visit.checkInTime.toDate()
-              : new Date(visit.checkInTime)
-            ).toLocaleDateString()
+            ? visit.checkInTime.toDate()
+            : new Date(visit.checkInTime)
+          ).toLocaleDateString()
           : (feedback?.createdAt
-              ? (
-                  feedback.createdAt.toDate
-                    ? feedback.createdAt.toDate()
-                    : new Date(feedback.createdAt)
-                ).toLocaleDateString()
-              : ""),
+            ? (
+              feedback.createdAt.toDate
+                ? feedback.createdAt.toDate()
+                : new Date(feedback.createdAt)
+            ).toLocaleDateString()
+            : ""),
         comment:
           feedback?.suggestion ||
           feedback?.commendation ||
@@ -2712,10 +2721,10 @@ const Analytics = ({ setActiveTab }) => {
 
   const officialOfficeDisplayName = toOfficialOfficeDisplayName(
     currentOfficeRecord?.officialName ||
-      currentOfficeRecord?.name ||
-      currentUser?.originalOffice ||
-      currentUser?.office ||
-      "",
+    currentOfficeRecord?.name ||
+    currentUser?.originalOffice ||
+    currentUser?.office ||
+    "",
     offices,
   );
 
@@ -2727,10 +2736,10 @@ const Analytics = ({ setActiveTab }) => {
     if (currentUser.type === "SuperAdmin") {
       return toOfficialOfficePrintName(
         currentOfficeRecord?.officialName ||
-          currentOfficeRecord?.name ||
-          currentUser.originalOffice ||
-          currentUser.office ||
-          fallbackOfficeName,
+        currentOfficeRecord?.name ||
+        currentUser.originalOffice ||
+        currentUser.office ||
+        fallbackOfficeName,
         offices,
       );
     }
@@ -2740,10 +2749,10 @@ const Analytics = ({ setActiveTab }) => {
 
     return toOfficialOfficePrintName(
       currentOfficeRecord?.officialName ||
-        currentOfficeRecord?.name ||
-        currentUser.originalOffice ||
-        currentUser.office ||
-        fallbackOfficeName,
+      currentOfficeRecord?.name ||
+      currentUser.originalOffice ||
+      currentUser.office ||
+      fallbackOfficeName,
       offices,
     );
   }, [currentUser, currentOfficeRecord, selectedOfficeFilter, offices]);
@@ -2832,9 +2841,9 @@ const Analytics = ({ setActiveTab }) => {
           getCharterRatingValue(matchedVisit, 3),
         commendation: toTrimmedText(
           feedback?.commendation ||
-            feedback?.commendations ||
-            feedback?.positiveFeedback ||
-            feedback?.compliment,
+          feedback?.commendations ||
+          feedback?.positiveFeedback ||
+          feedback?.compliment,
         ),
         suggestion: toTrimmedText(
           feedback?.suggestion || feedback?.recommendation,
@@ -3024,10 +3033,10 @@ const Analytics = ({ setActiveTab }) => {
       selectedOfficeFilter !== "all"
         ? selectedOfficeFilter
         : officeAnalyticsRows[0]?.office ||
-          currentOfficeRecord?.name ||
-          currentUser?.originalOffice ||
-          currentUser?.office ||
-          "";
+        currentOfficeRecord?.name ||
+        currentUser?.originalOffice ||
+        currentUser?.office ||
+        "";
 
     const matchedOffice = findOfficeRecordByName(sourceOfficeName, offices);
 
@@ -3189,12 +3198,12 @@ const Analytics = ({ setActiveTab }) => {
         const autoSuggestionsDetail = formatCsfItemsForInput(row?.suggestions);
         const commendationDetail =
           !existing ||
-          existing.commendationDetail === existing._autoCommendationDetail
+            existing.commendationDetail === existing._autoCommendationDetail
             ? autoCommendationDetail
             : existing.commendationDetail;
         const suggestionsDetail =
           !existing ||
-          existing.suggestionsDetail === existing._autoSuggestionsDetail
+            existing.suggestionsDetail === existing._autoSuggestionsDetail
             ? autoSuggestionsDetail
             : existing.suggestionsDetail;
 
@@ -3216,13 +3225,13 @@ const Analytics = ({ setActiveTab }) => {
           existing.rootCause !== next[officeKey].rootCause ||
           existing.actionPlan !== next[officeKey].actionPlan ||
           existing.targetImplementation !==
-            next[officeKey].targetImplementation ||
+          next[officeKey].targetImplementation ||
           existing.implementationStatus !==
-            next[officeKey].implementationStatus ||
+          next[officeKey].implementationStatus ||
           existing._autoCommendationDetail !==
-            next[officeKey]._autoCommendationDetail ||
+          next[officeKey]._autoCommendationDetail ||
           existing._autoSuggestionsDetail !==
-            next[officeKey]._autoSuggestionsDetail
+          next[officeKey]._autoSuggestionsDetail
         ) {
           changed = true;
         }
@@ -3329,7 +3338,7 @@ const Analytics = ({ setActiveTab }) => {
       });
 
       saveAs(blob, getExcelDownloadFileName(excelReportMonthValue));
-    } catch  {
+    } catch {
       alert("Failed to export Excel file. Please try again.");
     } finally {
       setIsExportingExcel(false);
@@ -3344,7 +3353,7 @@ const Analytics = ({ setActiveTab }) => {
         syncPrintFooterSnapshot();
         window.print();
       }, 0);
-    } catch  {
+    } catch {
       alert("Failed to print. Please try again.");
     }
   };
@@ -3593,13 +3602,13 @@ const Analytics = ({ setActiveTab }) => {
     } else {
       narrativeLines.push(
         `During this reporting period, ${currentUser && currentUser.type === "OfficeAdmin" ? `the ${currentUser.originalOffice || currentUser.office} office` : "all tracked offices"} logged ` +
-          `${filteredVisits.length} visitor check-in${filteredVisits.length !== 1 ? "s" : ""} and ${filteredFeedbacks.length} feedback response${filteredFeedbacks.length !== 1 ? "s" : ""}.`,
+        `${filteredVisits.length} visitor check-in${filteredVisits.length !== 1 ? "s" : ""} and ${filteredFeedbacks.length} feedback response${filteredFeedbacks.length !== 1 ? "s" : ""}.`,
       );
 
       if (totalRatedFeedback > 0) {
         narrativeLines.push(
           `The overall average satisfaction rating was ${avgSatisfaction} out of 5.0, representing ` +
-            `${parseFloat(avgSatisfaction) >= 4 ? "strong" : parseFloat(avgSatisfaction) >= 3 ? "moderate" : "developing"} service performance.`,
+          `${parseFloat(avgSatisfaction) >= 4 ? "strong" : parseFloat(avgSatisfaction) >= 3 ? "moderate" : "developing"} service performance.`,
         );
       } else if (filteredFeedbacks.length > 0) {
         narrativeLines.push(
@@ -3672,13 +3681,13 @@ const Analytics = ({ setActiveTab }) => {
     } else {
       narrativeLines.push(
         `**Positive Highlights:** ${highSatCount} response${highSatCount !== 1 ? "s" : ""} scored 4.0 and above` +
-          `${totalRatedFeedback > 0 ? ` (${highSatPct}% of rated feedback).` : "."}`,
+        `${totalRatedFeedback > 0 ? ` (${highSatPct}% of rated feedback).` : "."}`,
       );
 
       if (lowSatCount > 0) {
         narrativeLines.push(
           `**Areas for Improvement:** ${lowSatCount} response${lowSatCount !== 1 ? "s" : ""} scored below 2.0` +
-            `${totalRatedFeedback > 0 ? ` (${lowSatPct}% of rated feedback).` : "."}`,
+          `${totalRatedFeedback > 0 ? ` (${lowSatPct}% of rated feedback).` : "."}`,
         );
       } else {
         narrativeLines.push(
@@ -3727,7 +3736,7 @@ const Analytics = ({ setActiveTab }) => {
     } else {
       narrativeLines.push(
         `This reporting period demonstrates ${parseFloat(avgSatisfaction) >= 4 ? "strong visitor engagement and satisfaction" : parseFloat(avgSatisfaction) >= 3 ? "steady engagement with room for enhancement" : "developing engagement requiring focused improvements"}.` +
-          " Continued monitoring of traffic and satisfaction patterns will support data-driven service improvements.",
+        " Continued monitoring of traffic and satisfaction patterns will support data-driven service improvements.",
       );
     }
 
@@ -4078,7 +4087,7 @@ const Analytics = ({ setActiveTab }) => {
               return (
                 <ul className="list-disc pl-4 space-y-1">
                   {items.map((item, index) => (
-                    <li key={`${item}-${index}`} className="break-words">
+                    <li key={`${item}-${index}`} className="wrap-break-word">
                       {item}
                     </li>
                   ))}
@@ -4179,9 +4188,9 @@ const Analytics = ({ setActiveTab }) => {
                           {renderList(
                             toTrimmedText(row.commendationDetail)
                               ? row.commendationDetail
-                                  .split(/\r?\n/)
-                                  .map((item) => item.trim())
-                                  .filter(Boolean)
+                                .split(/\r?\n/)
+                                .map((item) => item.trim())
+                                .filter(Boolean)
                               : row.commendations,
                           )}
                         </td>
@@ -4189,9 +4198,9 @@ const Analytics = ({ setActiveTab }) => {
                           {renderList(
                             toTrimmedText(row.suggestionsDetail)
                               ? row.suggestionsDetail
-                                  .split(/\r?\n/)
-                                  .map((item) => item.trim())
-                                  .filter(Boolean)
+                                .split(/\r?\n/)
+                                .map((item) => item.trim())
+                                .filter(Boolean)
                               : row.suggestions,
                           )}
                         </td>
@@ -4861,9 +4870,8 @@ const Analytics = ({ setActiveTab }) => {
                     </span>
                     <ChevronDown
                       size={16}
-                      className={`text-gray-600 transition-transform ${
-                        showDayRangeDropdown ? "rotate-180" : ""
-                      }`}
+                      className={`text-gray-600 transition-transform ${showDayRangeDropdown ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -4970,11 +4978,10 @@ const Analytics = ({ setActiveTab }) => {
 
             {/* Feedback Insights */}
             <Card
-              className={`relative overflow-hidden ${
-                canOpenFeedbackTab
-                  ? "cursor-pointer hover:shadow-md transition-shadow duration-200"
-                  : ""
-              }`}
+              className={`relative overflow-hidden ${canOpenFeedbackTab
+                ? "cursor-pointer hover:shadow-md transition-shadow duration-200"
+                : ""
+                }`}
               onClick={canOpenFeedbackTab ? handleOpenFeedbackTab : undefined}
               onKeyDown={
                 canOpenFeedbackTab ? handleFeedbackCardKeyDown : undefined
@@ -4985,7 +4992,7 @@ const Analytics = ({ setActiveTab }) => {
                 canOpenFeedbackTab ? "Open feedback section" : undefined
               }
             >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-200 to-transparent no-print"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-purple-200 to-transparent no-print"></div>
 
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <div className="flex items-center gap-3">
@@ -5015,7 +5022,7 @@ const Analytics = ({ setActiveTab }) => {
               </div>
 
               {/* Scrollable Insights */}
-              <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar print:max-h-none print:overflow-visible">
+              <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar print:max-h-none print:overflow-visible">
                 {feedbacksWithVisitDetails.length > 0 ? (
                   (() => {
                     return feedbacksWithVisitDetails.map((feedback) => (
@@ -5045,9 +5052,9 @@ const Analytics = ({ setActiveTab }) => {
                           {feedback.visitorDate ||
                             (feedback.createdAt
                               ? (feedback.createdAt.toDate
-                                  ? feedback.createdAt.toDate()
-                                  : new Date(feedback.createdAt)
-                                ).toLocaleDateString()
+                                ? feedback.createdAt.toDate()
+                                : new Date(feedback.createdAt)
+                              ).toLocaleDateString()
                               : "N/A")}
                         </p>
                       </div>
@@ -5074,7 +5081,7 @@ const Analytics = ({ setActiveTab }) => {
         </div>
 
         {showPrintSignatoryModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/15 backdrop-blur-md p-4 no-print print:hidden">
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/15 backdrop-blur-md p-4 no-print print:hidden">
             <div className="w-full max-w-3xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
               <div className="border-b border-slate-200 bg-[linear-gradient(135deg,#faf5ff_0%,#ffffff_58%,#f8fafc_100%)] px-5 py-4 sm:px-6">
                 <div className="flex items-start justify-between gap-4">
@@ -5125,7 +5132,7 @@ const Analytics = ({ setActiveTab }) => {
                             )
                           }
                           placeholder="Enter name"
-                          className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </label>
 
@@ -5141,7 +5148,7 @@ const Analytics = ({ setActiveTab }) => {
                             )
                           }
                           placeholder="Enter name"
-                          className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </label>
                     </div>
@@ -5155,7 +5162,7 @@ const Analytics = ({ setActiveTab }) => {
                           handlePrintSignatoryChange("approved", e.target.value)
                         }
                         placeholder="Enter name"
-                        className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                     </label>
                   </section>
@@ -5188,7 +5195,7 @@ const Analytics = ({ setActiveTab }) => {
                             )
                           }
                           placeholder="Enter document code"
-                          className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </label>
 
@@ -5204,7 +5211,7 @@ const Analytics = ({ setActiveTab }) => {
                             )
                           }
                           placeholder="Enter revision number"
-                          className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </label>
 
@@ -5231,7 +5238,7 @@ const Analytics = ({ setActiveTab }) => {
                         <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">
                           Footer Preview
                         </p>
-                        <p className="mt-2 break-words text-sm text-slate-700">
+                        <p className="mt-2 wrap-break-word text-sm text-slate-700">
                           {documentCodeForPrint} | {revisionNumberForPrint} |{" "}
                           {formatPrintFooterDate(new Date())} | Page 1 of N
                         </p>
@@ -5366,7 +5373,7 @@ const Analytics = ({ setActiveTab }) => {
                                 e.target.value,
                               )
                             }
-                            className="h-[44px] rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           >
                             <option value="">Select status</option>
                             <option value="closed">
@@ -5412,7 +5419,7 @@ const Analytics = ({ setActiveTab }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-[#6B46C1] to-[#553C9A] text-white p-6">
+              <div className="bg-linear-to-r from-[#6B46C1] to-[#553C9A] text-white p-6">
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-2xl font-bold mb-2">
@@ -5483,7 +5490,7 @@ const Analytics = ({ setActiveTab }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-[#6B46C1] via-[#553C9A] to-[#6B46C1] text-white p-6">
+              <div className="bg-linear-to-r from-[#6B46C1] via-[#553C9A] to-[#6B46C1] text-white p-6">
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">

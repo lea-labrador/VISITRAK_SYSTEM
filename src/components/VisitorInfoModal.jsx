@@ -39,7 +39,7 @@ const VisitorInfoModal = ({
       {/* Modal */}
       <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden animate-scale-in">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 text-white p-6">
+        <div className="bg-linear-to-r from-purple-600 to-purple-800 text-white p-6">
           <h2 className="text-2xl font-bold">{ratingsOnly ? "Visitor Ratings" : "Visitor Information"}</h2>
         </div>
 

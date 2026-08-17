@@ -41,7 +41,8 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
       if (savedUser) {
         try {
           userToUse = JSON.parse(savedUser);
-        } catch  {
+        } catch {
+          //
         }
       }
     }
@@ -152,6 +153,7 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
           setNotifications(limitedNotifications);
           setLoading(false);
           
+        // eslint-disable-next-line no-unused-vars
         }, (error) => {
           setLoading(false);
         });
@@ -299,7 +301,7 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-  }, [lastViewedTime, markedAsRead, currentUser?.email, currentUser?.uid, currentUser?.id]);
+  }, [lastViewedTime, markedAsRead, currentUser.email, currentUser.uid, currentUser.id, currentUser]);
 
   // Filter and search notifications
   const filteredNotifications = notifications.filter(notif => {
@@ -325,9 +327,9 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
   if (loading) {
     return (
       <section className={notificationFeedCardClass}>
-        <div className="flex justify-between items-center border-b pb-4 mb-4 border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="flex justify-between items-center border-b pb-4 mb-4 border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
               <Bell className="w-5 h-5 text-white" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -352,11 +354,11 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
     <>
       <section className={notificationFeedCardClass}>
         {/* Enhanced Header */}
-        <div className="border-b pb-4 mb-4 border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="border-b pb-4 mb-4 border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
                   <Bell className="w-5 h-5 text-white" />
                 </div>
                 {newNotificationCount > 0 && (
@@ -386,7 +388,7 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
               disabled={newNotificationCount === 0}
               className={`group flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300 ${
                 newNotificationCount > 0
-                  ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
+                  ? "bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
                   : "bg-gray-100 text-gray-400 dark:bg-gray-800 cursor-not-allowed"
               }`}
             >
@@ -455,16 +457,16 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
                 onClick={() => handleNotificationClick(notif)}
                 className={`group cursor-pointer p-4 rounded-xl transition-all duration-300 hover:scale-[1.02] border ${
                   notif.isNew 
-                    ? 'bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-800 hover:shadow-lg'
+                    ? 'bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-800 hover:shadow-lg'
                     : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 hover:shadow-md'
                 }`}
               >
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${
+                  <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-md ${
                     notif.isNew
-                      ? 'bg-gradient-to-br from-purple-500 to-blue-500'
-                      : 'bg-gradient-to-br from-gray-400 to-gray-500'
+                      ? 'bg-linear-to-br from-purple-500 to-blue-500'
+                      : 'bg-linear-to-br from-gray-400 to-gray-500'
                   }`}>
                     <User className="w-6 h-6 text-white" />
                   </div>
@@ -492,8 +494,8 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
                         </div>
                       </div>
                       {notif.isNew && (
-                        <div className="flex-shrink-0">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-bold shadow-lg">
+                        <div className="shrink-0">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white text-xs font-bold shadow-lg">
                             <Sparkles className="w-3 h-3" />
                             NEW
                           </span>
@@ -535,7 +537,7 @@ const NotificationCard = ({ user = { type: "SuperAdmin", office: null } }) => {
 
         {/* Footer Stats */}
         {filteredNotifications.length > 0 && (
-          <div className="flex-shrink-0 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="shrink-0 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
               <span>
                 Showing {filteredNotifications.length} of {notifications.length} notification{notifications.length !== 1 ? 's' : ''}

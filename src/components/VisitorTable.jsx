@@ -124,8 +124,8 @@ const VisitorTable = ({
                       <col className="w-[150px]" />
                       <col className="w-[120px]" />
                       <col className="w-[100px]" />
-                      <col className="w-[80px]" />
-                      <col className="w-[80px]" />
+                      <col className="w-20" />
+                      <col className="w-20" />
                       <col className="w-[100px]" />
                       {canDeleteVisitors && <col className="w-[70px]" />}
                     </colgroup>
@@ -166,8 +166,8 @@ const VisitorTable = ({
                         <col className="w-[150px]" />
                         <col className="w-[120px]" />
                         <col className="w-[100px]" />
-                        <col className="w-[80px]" />
-                        <col className="w-[80px]" />
+                        <col className="w-20" />
+                        <col className="w-20" />
                         <col className="w-[100px]" />
                         {canDeleteVisitors && <col className="w-[70px]" />}
                       </colgroup>
@@ -276,7 +276,7 @@ const VisitorTable = ({
             {/* Modal Header */}
             <div className="flex items-start justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center">
-                <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 mr-3">
+                <div className="shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 mr-3">
                   <svg
                     className="h-5 w-5 text-red-600 dark:text-red-400"
                     fill="none"

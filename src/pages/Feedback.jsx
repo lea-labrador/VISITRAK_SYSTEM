@@ -85,19 +85,19 @@ const normalizeQuestionRatings = (answers, questions = []) => {
       if (answer && typeof answer === "object") {
         const question = toTrimmedText(
           answer.question ||
-            answer.label ||
-            answer.text ||
-            answer.title ||
-            answer.prompt ||
-            answer.item
+          answer.label ||
+          answer.text ||
+          answer.title ||
+          answer.prompt ||
+          answer.item
         );
 
         const rating = getNumericRating(
           answer.rating ??
-            answer.score ??
-            answer.value ??
-            answer.answer ??
-            answer.selected
+          answer.score ??
+          answer.value ??
+          answer.answer ??
+          answer.selected
         );
 
         return {
@@ -356,7 +356,7 @@ const Feedback = ({ user }) => {
     (normalizedUserType === "officeadmin" ||
       normalizedUserRole === "officeadmin" ||
       normalizedUserRole === "office");
-  
+
   // Use the custom hook to fetch feedbacks
   const { feedbacks, loading, error } = useFeedbackRatings();
 
@@ -460,11 +460,11 @@ const Feedback = ({ user }) => {
       unsubscribe();
     };
   }, [qrManagerOpen]);
- 
+
   // Get a safe date string from createdAt
   const getSafeDateString = (createdAt) => {
     if (!createdAt) return "";
-    
+
     try {
       // Handle both Date objects and Firestore Timestamps
       if (createdAt.toDate) {
@@ -477,17 +477,17 @@ const Feedback = ({ user }) => {
     } catch {
       return "";
     }
-    
+
     return "";
   };
 
   // Get formatted display date
   const getDisplayDate = (createdAt) => {
     if (!createdAt) return "Date not available";
-    
+
     try {
       let dateObj;
-      
+
       if (createdAt.toDate) {
         dateObj = createdAt.toDate();
       } else if (createdAt instanceof Date) {
@@ -505,7 +505,7 @@ const Feedback = ({ user }) => {
         month: "short",
         day: "numeric",
       });
-    } catch  {
+    } catch {
       return "Invalid date";
     }
   };
@@ -515,7 +515,7 @@ const Feedback = ({ user }) => {
     if (!Array.isArray(feedbacks)) {
       return [];
     }
-    
+
     try {
       return feedbacks
         .map((f, idx) => {
@@ -537,21 +537,21 @@ const Feedback = ({ user }) => {
         })
         .filter(({ f, suggestion, commendation, displayName, satisfaction }) => {
           if (!f) return false;
-          
+
           const hasWrittenFeedback = Boolean(commendation || suggestion);
           const hasDisplayableFeedback = hasWrittenFeedback || satisfaction !== null;
           if (!hasDisplayableFeedback) return false;
-          
+
           const feedbackOffice = f.office || "Unspecified";
           const searchLower = (search || "").toLowerCase();
-          
+
           // Safe search across multiple fields
           const nameMatch = displayName.toLowerCase().includes(searchLower);
           const suggestionMatch = suggestion.toLowerCase().includes(searchLower);
           const commendationMatch = commendation.toLowerCase().includes(searchLower);
           const visitIdMatch = (f.visitId || "").toLowerCase().includes(searchLower);
           const matchesSearch = nameMatch || suggestionMatch || commendationMatch || visitIdMatch;
-          
+
           // Handle date range filter safely
           const dayString = getSafeDateString(f.createdAt);
           const matchesDate = (() => {
@@ -561,7 +561,7 @@ const Feedback = ({ user }) => {
             if (dayRange.end && dayString > dayRange.end) return false;
             return true;
           })();
-          
+
           // Handle office filter based on user role
           let matchesOffice = true;
           if (isOfficeAdmin) {
@@ -573,7 +573,7 @@ const Feedback = ({ user }) => {
           } else if (office) {
             matchesOffice = compareOfficeNames(feedbackOffice, office, offices);
           }
-          
+
           return matchesSearch && matchesDate && matchesOffice;
         })
         .map(({ f, idx, suggestion, commendation, questionRatings, displayName, satisfaction }) => {
@@ -585,7 +585,7 @@ const Feedback = ({ user }) => {
             suggestion ||
             commendation ||
             "No written feedback provided. Rating details are available.";
-          
+
           return {
             // Data for FeedbackTable
             id: f.id || `feedback-${idx}`,
@@ -599,7 +599,7 @@ const Feedback = ({ user }) => {
             commendation: commendation || "No commendation provided.",
             suggestion: suggestion || "No suggestion provided.",
             questionRatings,
-            
+
             // Additional data for FeedbackModal
             name: f.name || "",
             answers: f.answers || [],
@@ -614,12 +614,12 @@ const Feedback = ({ user }) => {
             cc1Rating: f.cc1Rating ?? null,
             cc2Rating: f.cc2Rating ?? null,
             cc3Rating: f.cc3Rating ?? null,
-            
+
             // Store original for reference
             originalData: f,
           };
         });
-    } catch  {
+    } catch {
       return [];
     }
   }, [feedbacks, search, dayRange, office, isOfficeAdmin, user?.office, offices]);
@@ -634,8 +634,8 @@ const Feedback = ({ user }) => {
 
       const feedbackOfficeNames = Array.isArray(feedbacks)
         ? feedbacks
-            .map((feedback) => toTrimmedText(feedback?.office))
-            .filter((officeName) => officeName && !isSuperAdminOfficeOption(officeName))
+          .map((feedback) => toTrimmedText(feedback?.office))
+          .filter((officeName) => officeName && !isSuperAdminOfficeOption(officeName))
         : [];
 
       const combined = [...officeNames, ...feedbackOfficeNames];
@@ -652,7 +652,7 @@ const Feedback = ({ user }) => {
       }
 
       return ["Main Office", "Branch Office", "Headquarters"];
-    } catch  {
+    } catch {
       return ["Main Office", "Branch Office", "Headquarters"];
     }
   }, [offices, feedbacks, isOfficeAdmin, user?.office]);
@@ -807,7 +807,7 @@ const Feedback = ({ user }) => {
     try {
       await navigator.clipboard.writeText(generatedQr.url);
       alert("Manual feedback QR link copied.");
-    } catch  {
+    } catch {
       alert("Could not copy the link. Please copy it manually.");
     }
   };
@@ -1086,8 +1086,32 @@ const Feedback = ({ user }) => {
       setTimeout(() => {
         window.print();
       }, 0);
-    } catch  {
+    } catch {
       alert("Failed to print. Please try again.");
+    }
+  };
+
+  const downloadGeneratedQr = async () => {
+    if (!generatedQr?.url) return;
+
+    try {
+      const response = await fetch(buildQrImageUrl(generatedQr.url));
+      if (!response.ok) throw new Error("Failed to fetch QR image");
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `feedback-qr-${generatedQr.token}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      alert("Could not download the QR code. Please try again.");
+      console.error(err);
     }
   };
 
@@ -1095,7 +1119,7 @@ const Feedback = ({ user }) => {
   const handleViewFull = (visitor) => {
     try {
       if (!visitor) return;
-      
+
       const modalData = {
         id: visitor.id || "",
         displayName: visitor.displayName || visitor.alias || "Anonymous",
@@ -1127,7 +1151,7 @@ const Feedback = ({ user }) => {
         cc3Rating: visitor.cc3Rating ?? null,
       };
       setSelectedVisitor(modalData);
-    } catch  {
+    } catch {
       alert("Failed to open feedback details. Please try again.");
     }
   };
@@ -1305,7 +1329,7 @@ const Feedback = ({ user }) => {
         <div className="text-center text-red-500 bg-red-50 dark:bg-red-900/20 p-6 rounded-lg max-w-md mx-auto">
           <p className="text-lg font-semibold">Error Loading Feedback</p>
           <p className="mt-2">{error.message || "Failed to load feedback data"}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
           >
@@ -1323,7 +1347,7 @@ const Feedback = ({ user }) => {
         <div className="text-center text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-lg max-w-md mx-auto">
           <p className="text-lg font-semibold">Data Format Issue</p>
           <p className="mt-2">Feedback data is not in the expected format.</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
           >
@@ -1339,7 +1363,7 @@ const Feedback = ({ user }) => {
       {/* Screen View */}
       <div className="print:hidden min-h-screen dark:bg-[#1f1f1f]">
         <div className="px-4 sm:px-8 pt-6 pb-6 space-y-6 flex flex-col">
-         
+
           {/* 🔍 Filters */}
           <FilterBar
             search={search}
@@ -1360,8 +1384,8 @@ const Feedback = ({ user }) => {
           {/* 📋 Feedback Table */}
           {filteredFeedbacks.length === 0 ? (
             <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg shadow">
-              {feedbacks.length === 0 
-                ? "No feedback data available yet." 
+              {feedbacks.length === 0
+                ? "No feedback data available yet."
                 : "No feedback matches your filters."}
             </div>
           ) : (
@@ -1448,11 +1472,10 @@ const Feedback = ({ user }) => {
                           mode: "lifetime",
                         }))
                       }
-                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                        manualQrSettings.mode === "lifetime"
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-                      }`}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${manualQrSettings.mode === "lifetime"
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        }`}
                     >
                       Lifetime
                     </button>
@@ -1465,11 +1488,10 @@ const Feedback = ({ user }) => {
                           maxUses: 1,
                         }))
                       }
-                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                        manualQrSettings.mode === "single"
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-                      }`}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${manualQrSettings.mode === "single"
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        }`}
                     >
                       Single-use
                     </button>
@@ -1482,11 +1504,10 @@ const Feedback = ({ user }) => {
                           maxUses: Math.max(2, Number(previous.maxUses) || 25),
                         }))
                       }
-                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                        manualQrSettings.mode === "batch"
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-                      }`}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${manualQrSettings.mode === "batch"
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                        }`}
                     >
                       Batch
                     </button>
@@ -1501,47 +1522,47 @@ const Feedback = ({ user }) => {
 
                 {manualQrSettings.mode !== "lifetime" && (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Expires In
-                    </label>
-                    <select
-                      value={manualQrSettings.expiresInHours}
-                      onChange={(event) =>
-                        setManualQrSettings((previous) => ({
-                          ...previous,
-                          expiresInHours: Number(event.target.value),
-                        }))
-                      }
-                      className="h-[42px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-gray-900 dark:text-gray-200"
-                    >
-                      <option value={1}>1 hour</option>
-                      <option value={8}>8 hours</option>
-                      <option value={24}>24 hours</option>
-                      <option value={72}>3 days</option>
-                      <option value={168}>7 days</option>
-                    </select>
-                  </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Expires In
+                      </label>
+                      <select
+                        value={manualQrSettings.expiresInHours}
+                        onChange={(event) =>
+                          setManualQrSettings((previous) => ({
+                            ...previous,
+                            expiresInHours: Number(event.target.value),
+                          }))
+                        }
+                        className="h-[42px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:bg-gray-900 dark:text-gray-200"
+                      >
+                        <option value={1}>1 hour</option>
+                        <option value={8}>8 hours</option>
+                        <option value={24}>24 hours</option>
+                        <option value={72}>3 days</option>
+                        <option value={168}>7 days</option>
+                      </select>
+                    </div>
 
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Max Uses
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="500"
-                      disabled={manualQrSettings.mode === "single"}
-                      value={manualQrSettings.mode === "single" ? 1 : manualQrSettings.maxUses}
-                      onChange={(event) =>
-                        setManualQrSettings((previous) => ({
-                          ...previous,
-                          maxUses: Number(event.target.value),
-                        }))
-                      }
-                      className="h-[42px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:bg-gray-100 disabled:text-gray-500 dark:bg-gray-900 dark:text-gray-200 dark:disabled:bg-gray-800"
-                    />
-                  </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Max Uses
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="500"
+                        disabled={manualQrSettings.mode === "single"}
+                        value={manualQrSettings.mode === "single" ? 1 : manualQrSettings.maxUses}
+                        onChange={(event) =>
+                          setManualQrSettings((previous) => ({
+                            ...previous,
+                            maxUses: Number(event.target.value),
+                          }))
+                        }
+                        className="h-[42px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:bg-gray-100 disabled:text-gray-500 dark:bg-gray-900 dark:text-gray-200 dark:disabled:bg-gray-800"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -1639,13 +1660,20 @@ const Feedback = ({ user }) => {
                 >
                   <Clipboard size={16} /> Copy Link
                 </button>
-                <a
+                {/* <a
                   href={buildQrImageUrl(generatedQr.url)}
                   download={`feedback-qr-${generatedQr.token}.png`}
                   className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   <Download size={16} /> Download
-                </a>
+                </a> */}
+                <button
+                  type="button"
+                  onClick={downloadGeneratedQr}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  <Download size={16} /> Download
+                </button>
                 <button
                   type="button"
                   onClick={printGeneratedQr}
@@ -1707,11 +1735,10 @@ const Feedback = ({ user }) => {
                                   {qrToken.officialOfficeName || qrToken.office || "All Offices"}
                                 </p>
                                 <span
-                                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                    active
-                                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
-                                      : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-                                  }`}
+                                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${active
+                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
+                                    : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                                    }`}
                                 >
                                   {revoked ? "Revoked" : qrToken.type === "lifetime" ? "Lifetime" : qrToken.status || "Active"}
                                 </span>
@@ -1803,9 +1830,9 @@ const Feedback = ({ user }) => {
                     <span className="underline">{reportMonthLabel}</span>
                   </h2>
 
-                  
+
                 </th>
-                
+
               </tr>
             </thead>
             <tbody>
@@ -1827,7 +1854,7 @@ const Feedback = ({ user }) => {
                       <col style={{ width: "8%" }} />
                     </colgroup>
                     <thead>
-                      
+
                       <tr>
                         <th rowSpan={2} className="w-[16%]">Office</th>
                         <th rowSpan={2} className="w-[18%]">Commendation</th>

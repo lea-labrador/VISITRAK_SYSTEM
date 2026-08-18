@@ -1091,6 +1091,12 @@ const Feedback = ({ user }) => {
     }
   };
 
+  const sanitizeFileName = (value) =>
+    toTrimmedText(value)
+      .replace(/[\\/:*?"<>|]/g, "")   // strip characters invalid in filenames
+      .replace(/\s+/g, "-")            // spaces -> hyphens
+      .slice(0, 80) || "feedback-qr";
+
   const downloadGeneratedQr = async () => {
     if (!generatedQr?.url) return;
 
@@ -1101,9 +1107,13 @@ const Feedback = ({ user }) => {
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
+      const officeLabel = sanitizeFileName(
+        generatedQr.officialOfficeName || generatedQr.office
+      );
+
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `feedback-qr-${generatedQr.token}.png`;
+      link.download = `${officeLabel}-feedback-qr.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

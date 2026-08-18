@@ -369,7 +369,7 @@ const Dashboard = ({
                   value={currentlyCheckedIn}
                 />
                 <CardStat
-                  title="Avg. Satisfaction"
+                  title="Avg. Satisfactionkdjfksd"
                   value={formattedAvgSatisfaction}
                 />
               </div>

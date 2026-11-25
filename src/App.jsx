@@ -155,7 +155,7 @@ function App() {
   };
 
   const handleLogout = async () => {
-    try {n
+    try {
       await signOut(auth);
     } catch {
       // ignore errors on sign-out

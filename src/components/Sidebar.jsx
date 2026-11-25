@@ -17,10 +17,9 @@ const Sidebar = ({
         relative h-full flex flex-col justify-between p-5
         transition-all duration-300
         ${collapsed ? "w-20" : "w-64"}
-        ${
-          darkMode
-            ? "bg-[#1f1f1f] text-gray-100 border-r border-gray-700"
-            : "bg-gray-50 text-gray-800 border-r border-gray-200"
+        ${darkMode
+          ? "bg-[#1f1f1f] text-gray-100 border-r border-gray-700"
+          : "bg-gray-50 text-gray-800 border-r border-gray-200"
         }
       `}
     >
@@ -32,10 +31,9 @@ const Sidebar = ({
           w-9 h-9 rounded-full
           flex items-center justify-center
           shadow-lg transition
-          ${
-            darkMode
-              ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
-              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+          ${darkMode
+            ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
+            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
           }
         `}
       >
@@ -102,6 +100,14 @@ const Sidebar = ({
   );
 };
 
+// Display names for tabs whose id is not a plain single word.
+const TAB_LABELS = {
+  "manual-feedback": "Manual Feedback",
+};
+
+const getTabLabel = (tab) =>
+  TAB_LABELS[tab] || tab.charAt(0).toUpperCase() + tab.slice(1);
+
 const Section = ({
   title,
   tabs,
@@ -133,10 +139,9 @@ const Section = ({
               cursor-pointer rounded-md px-3 py-2
               transition-colors flex items-center gap-3
               justify-center ${!collapsed && "justify-start"}
-              ${
-                activeTab === tab
-                  ? "bg-[#491D76] text-white"
-                  : "hover:bg-[#A37ECA] dark:hover:bg-gray-700"
+              ${activeTab === tab
+                ? "bg-[#491D76] text-white"
+                : "hover:bg-[#A37ECA] dark:hover:bg-gray-700"
               }
             `}
           >
@@ -145,12 +150,11 @@ const Section = ({
             {tab === "visitors" && "👥"}
             {tab === "offices" && "🏢"}
             {tab === "feedback" && "💬"}
+            {tab === "manual-feedback" && "✍️"}
 
-            {!collapsed && (
-              <span className="capitalize">{tab}</span>
-            )}
+            {!collapsed && <span>{getTabLabel(tab)}</span>}
 
-            {collapsed && <Tooltip label={tab} />}
+            {collapsed && <Tooltip label={getTabLabel(tab)} />}
           </li>
         ))}
       </ul>

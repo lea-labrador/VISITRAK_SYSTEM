@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import EncoderPage from "./pages/EncoderPage";
 import { auth, authPersistenceReady } from "./lib/firebase";
 import { clearStoredSession, setStoredUser } from "./lib/sessionStorage";
 import {
@@ -97,7 +98,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let unsub = () => {};
+    let unsub = () => { };
     let disposed = false;
 
     authPersistenceReady.finally(() => {
@@ -108,6 +109,14 @@ function App() {
           if (!authUser) {
             setUser(null);
             clearStoredSession();
+            setIsLoading(false);
+            return;
+          }
+
+          // Helpers opening /encode sign in anonymously. They are not office
+          // accounts, so never sign them out or load a dashboard profile for them.
+          if (authUser.isAnonymous) {
+            setUser(null);
             setIsLoading(false);
             return;
           }
@@ -125,7 +134,7 @@ function App() {
           const userData = buildSessionUser(authUser, officeProfile);
           setUser(userData);
           setStoredUser(userData);
-        } catch  {
+        } catch {
           setUser(null);
           clearStoredSession();
         } finally {
@@ -146,9 +155,10 @@ function App() {
   };
 
   const handleLogout = async () => {
-    try {
+    try {n
       await signOut(auth);
-    } catch  {
+    } catch {
+      // ignore errors on sign-out
     } finally {
       setUser(null);
       clearStoredSession();
@@ -177,6 +187,7 @@ function App() {
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/encode" element={<EncoderPage />} />
 
         <Route
           path="/dashboard"

@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import { AlertTriangle, CheckCircle2, Check, ShieldAlert } from "lucide-react";
 import { db } from "../lib/firebase";
+import EncoderLinksPanel from "../components/EncoderLinksPanel";
 import bisuLogo from "../assets/bisulogo.png";
 import bagongPilipinasLogo from "../assets/bagong_pilipinas_logo.png";
 import tuvIsoLogo from "../assets/tuvISO_logo.png";
@@ -271,9 +272,9 @@ const ModalShell = ({ children }) => (
 /*  The actual encoding form (only ever mounted for Super Admin)              */
 /* -------------------------------------------------------------------------- */
 
-const ManualFeedbackForm = ({ user }) => {
+export const ManualFeedbackForm = ({ user, encoder = null }) => {
     const [offices, setOffices] = useState([]);
-    const [form, setForm] = useState(() => makeBlankForm());
+    const [form, setForm] = useState(() => makeBlankForm(encoder?.office || ""));
     const [error, setError] = useState("");
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -382,7 +383,7 @@ const ManualFeedbackForm = ({ user }) => {
     /* ---- step 2: save to Firestore (works even when the form is incomplete) ---- */
     const handleSave = async () => {
         // Defence in depth: the page is already Super Admin only.
-        if (!isSuperAdminUser(user) || saving) return;
+        if ((!encoder && !isSuperAdminUser(user)) || saving) return;
 
         setSaving(true);
         setError("");
@@ -397,7 +398,7 @@ const ManualFeedbackForm = ({ user }) => {
             const rated = Object.values(answers).filter((v) => v >= 1 && v <= 5);
             const averageRating = rated.length ? rated.reduce((sum, v) => sum + v, 0) / rated.length : 0;
 
-            const officeName = form.office.trim();
+            const officeName = (encoder?.office || form.office).trim();
             const officialOfficeName = selectedOffice?.officialName || officeName;
             // No date written on the paper form -> fall back to "now" for createdAt
             // (the feedback list is ordered by createdAt, so it must always exist).
@@ -437,7 +438,8 @@ const ManualFeedbackForm = ({ user }) => {
 
                 // manual-encoding markers
                 manualEntry: true,
-                source: "admin-manual-encoding",
+                source: encoder ? "encoder-link-manual-encoding" : "admin-manual-encoding",
+                ...(encoder ? { encoderLinkId: encoder.linkId } : {}),
                 isIncomplete: missing.length > 0,
                 missingFields: missing,
                 answeredRatings: Object.keys(answers).length,
@@ -448,11 +450,17 @@ const ManualFeedbackForm = ({ user }) => {
                 visitTimeMissing: !form.timeOfVisit,
                 createdAt: Timestamp.fromDate(visitDate),
                 encodedAt: serverTimestamp(),
-                encodedBy: {
-                    uid: user?.uid || user?.id || "",
-                    name: user?.name || "",
-                    email: user?.email || "",
-                },
+                encodedBy: encoder
+                    ? {
+                        uid: encoder.uid || "",
+                        name: encoder.label ? `Encoder: ${encoder.label}` : "Encoder link",
+                        email: "",
+                    }
+                    : {
+                        uid: user?.uid || user?.id || "",
+                        name: user?.name || "",
+                        email: user?.email || "",
+                    },
             };
 
             await addDoc(collection(db, "feedbacks"), payload);
@@ -467,7 +475,11 @@ const ManualFeedbackForm = ({ user }) => {
         } catch (err) {
             console.error("Manual feedback save failed:", err);
             setConfirmOpen(false);
-            setError(`Failed to save feedback: ${err?.code || err?.message || "Unknown error"}`);
+            setError(
+                encoder && err?.code === "permission-denied"
+                    ? "Could not save. This encoder link may have expired or been turned off by the administrator."
+                    : `Failed to save feedback: ${err?.code || err?.message || "Unknown error"}`,
+            );
             topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         } finally {
             setSaving(false);
@@ -501,7 +513,7 @@ const ManualFeedbackForm = ({ user }) => {
                             Manual Feedback Encoding
                         </h2>
                         <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                            Super Admin only. Type in paper feedback forms here. Unlike the public form, you can save a
+                            {encoder ? "Encoder access. " : "Super Admin only. "}Type in paper feedback forms here. Unlike the public form, you can save a
                             form even if some fields were left blank by the visitor. Only the <strong>office</strong> is
                             required. Entries are saved as Anonymous and flagged as incomplete when something is blank.
                         </p>
@@ -694,6 +706,7 @@ const ManualFeedbackForm = ({ user }) => {
                         <select
                             id="mf-office"
                             value={form.office}
+                            disabled={Boolean(encoder?.office)}
                             onChange={(e) => setField("office", e.target.value)}
                             className={`w-full appearance-none rounded-md border bg-transparent px-3 py-2.5 pr-10 text-sm text-[#1f1f1f] outline-none sm:text-base ${error && !isSelectableOffice(form.office)
                                 ? "border-red-500"
@@ -988,7 +1001,14 @@ const ManualFeedback = ({ user }) => {
         );
     }
 
-    return <ManualFeedbackForm user={user} />;
+    return (
+        <>
+            <div className="mx-auto max-w-5xl">
+                <EncoderLinksPanel user={user} />
+            </div>
+            <ManualFeedbackForm user={user} />
+        </>
+    );
 };
 
 export default ManualFeedback;

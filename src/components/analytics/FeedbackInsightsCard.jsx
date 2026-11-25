@@ -27,7 +27,7 @@ const FeedbackInsightsCard = ({ feedbacks, user, onIntegrate }) => {
           No feedback with comments
         </p>
       ) : (
-        <div className="space-y-4 max-h-[320px] overflow-y-auto">
+        <div className="space-y-4 max-h-80 overflow-y-auto">
           {withComments.map(f => (
             <div key={f.id} className="border-b pb-3">
               <h4 className="font-semibold">

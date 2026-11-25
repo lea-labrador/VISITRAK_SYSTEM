@@ -9,6 +9,7 @@ import Analytics from "../pages/Analytics";
 import Visitors from "../pages/Visitors";
 import Offices from "../pages/Offices";
 import Feedback from "../pages/Feedback";
+import ManualFeedback from "../pages/ManualFeedback";
 import Footer from "../components/Footer";
 import Profile from "../pages/Profile";
 import useAdminVisitors from "../hooks/useAdminVisitors";
@@ -341,7 +342,7 @@ const Dashboard = ({
     SuperAdmin: {
       overview: ["dashboard", "analytics", "notifications"],
       management: ["visitors", "offices"],
-      feedback: ["feedback"],
+      feedback: ["feedback", "manual-feedback"],
     },
     OfficeAdmin: {
       overview: ["dashboard", "notifications"],
@@ -432,11 +433,18 @@ const Dashboard = ({
   const avgSatisfaction = useMemo(() => {
     if (!filteredFeedbacks || filteredFeedbacks.length === 0) return "0.0";
 
-    const totalRating = filteredFeedbacks.reduce(
-      (sum, f) => sum + (f.averageRating || 0),
+    // Manually encoded forms may have no ratings at all (averageRating = 0).
+    // Leave those out so they don't pull the satisfaction average down.
+    const ratedFeedbacks = filteredFeedbacks.filter(
+      (f) => Number(f.averageRating) > 0
+    );
+    if (ratedFeedbacks.length === 0) return "0.0";
+
+    const totalRating = ratedFeedbacks.reduce(
+      (sum, f) => sum + Number(f.averageRating),
       0
     );
-    const average = totalRating / filteredFeedbacks.length;
+    const average = totalRating / ratedFeedbacks.length;
 
     return average.toFixed(1);
   }, [filteredFeedbacks]);
@@ -505,6 +513,9 @@ const Dashboard = ({
               feedbacks={filteredFeedbacks}
               user={user}
             />
+          )}
+          {activeTab === "manual-feedback" && user.type === "SuperAdmin" && (
+            <ManualFeedback user={user} />
           )}
           {activeTab === "notifications" && <NotificationCard user={user} />}
           {activeTab === "profile" && (

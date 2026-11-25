@@ -125,6 +125,18 @@ const normalizeQuestionRatings = (answers, questions = []) => {
   }
 
   if (typeof answers === "object") {
+    const entries = Object.entries(answers);
+    const hasNumberedKeys =
+      entries.length > 0 && entries.every(([key]) => /^\d+$/.test(key));
+
+    if (hasNumberedKeys) {
+      const maxNumber = Math.max(...entries.map(([key]) => Number(key)));
+      return Array.from({ length: maxNumber }, (_, index) => ({
+        question: `Question ${index + 1}`,
+        rating: getNumericRating(answers[String(index + 1)]),
+      }));
+    }
+
     return Object.entries(answers).map(([question, rating], index) => ({
       question: toTrimmedText(question) || `Question ${index + 1}`,
       rating: getNumericRating(rating),
@@ -494,6 +506,16 @@ const getExcelCellValue = (value) => {
 const getExcelRatingValue = (value) => {
   const numeric = getNumericRating(value);
   return numeric === null ? "" : numeric;
+};
+
+// Raw-data sheet only: a rating/CC with no valid entry (blank, or "N/A" saved as 0)
+// is written as "-" so AVERAGE() ignores it instead of counting a 0.
+const EXCEL_NO_ENTRY = "-";
+const getExcelRatingCell = (value) => {
+  const numeric = getNumericRating(value);
+  return numeric !== null && numeric >= 1 && numeric <= 5
+    ? numeric
+    : EXCEL_NO_ENTRY;
 };
 
 const getExcelDateValue = (record = {}) =>
@@ -1156,7 +1178,7 @@ const addRawDataWorksheet = ({
     const date = getExcelDateValue(record);
     const time = getExcelTimeValue(record);
     const ratings = Array.from({ length: 8 }, (_, ratingIndex) =>
-      getExcelRatingValue(record?.questionRatings?.[ratingIndex]?.rating),
+      getExcelRatingCell(record?.questionRatings?.[ratingIndex]?.rating),
     );
 
     worksheet.addRow([
@@ -1172,9 +1194,9 @@ const addRawDataWorksheet = ({
       getExcelCellValue(toExcelText(record?.regionOfResidence)),
       getExcelCellValue(toExcelText(record?.servedBy)),
       getExcelCellValue(toExcelText(record?.serviceAvailed)),
-      getExcelRatingValue(record?.cc1Rating),
-      getExcelRatingValue(record?.cc2Rating),
-      getExcelRatingValue(record?.cc3Rating),
+      getExcelRatingCell(record?.cc1Rating),
+      getExcelRatingCell(record?.cc2Rating),
+      getExcelRatingCell(record?.cc3Rating),
       ...ratings,
       getExcelCellValue(toExcelText(record?.commendation)),
       getExcelCellValue(toExcelText(record?.suggestion)),
@@ -1190,7 +1212,7 @@ const addRawDataWorksheet = ({
 
   const summaryRow = worksheet.getRow(summaryRowNumber);
   summaryRow.getCell(15).value = getSummaryCountFormula(
-    "O",
+    "D",
     firstDataRow,
     lastDataRow,
   );
@@ -2124,6 +2146,7 @@ const Analytics = ({ setActiveTab }) => {
                   "",
                 suggestion: d.suggestion || d.recommendation || "",
                 createdAt: d.createdAt,
+                manualEntry: d.manualEntry === true,
               };
             });
 
@@ -2200,6 +2223,7 @@ const Analytics = ({ setActiveTab }) => {
                   "",
                 suggestion: d.suggestion || d.recommendation || "",
                 createdAt: d.createdAt,
+                manualEntry: d.manualEntry === true,
               };
             });
 
@@ -2942,6 +2966,7 @@ const Analytics = ({ setActiveTab }) => {
       officeFeedbacks.forEach((feedback, feedbackIndex) => {
         const key =
           feedback?.visitId || feedback?.id || `feedback-${feedbackIndex}`;
+        const allowCcFallback = !feedback?.manualEntry;
         const existingRatings = charterRatingsByRespondent.get(key) || {
           cc1Rating: null,
           cc2Rating: null,
@@ -2952,17 +2977,17 @@ const Analytics = ({ setActiveTab }) => {
           cc1Rating:
             existingRatings.cc1Rating ??
             feedback?.cc1Rating ??
-            feedback?.questionRatings?.[0]?.rating ??
+            (allowCcFallback ? feedback?.questionRatings?.[0]?.rating : null) ??
             null,
           cc2Rating:
             existingRatings.cc2Rating ??
             feedback?.cc2Rating ??
-            feedback?.questionRatings?.[1]?.rating ??
+            (allowCcFallback ? feedback?.questionRatings?.[1]?.rating : null) ??
             null,
           cc3Rating:
             existingRatings.cc3Rating ??
             feedback?.cc3Rating ??
-            feedback?.questionRatings?.[2]?.rating ??
+            (allowCcFallback ? feedback?.questionRatings?.[2]?.rating : null) ??
             null,
         });
       });
